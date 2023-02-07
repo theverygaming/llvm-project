@@ -1,0 +1,12 @@
+#ifndef LLVM_LIB_TARGET_FOX32_TARGETINFO_FOX32TARGETINFO_H
+#define LLVM_LIB_TARGET_FOX32_TARGETINFO_FOX32TARGETINFO_H
+
+namespace llvm {
+
+class Target;
+
+Target &getThefox32Target();
+
+} // end namespace llvm
+
+#endif // LLVM_LIB_TARGET_FOX32_TARGETINFO_FOX32TARGETINFO_H

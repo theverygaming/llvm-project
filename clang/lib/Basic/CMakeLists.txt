@@ -79,6 +79,7 @@ add_clang_library(clangBasic
   Targets/BPF.cpp
   Targets/CSKY.cpp
   Targets/DirectX.cpp
+  Targets/fox32.cpp
   Targets/Hexagon.cpp
   Targets/Lanai.cpp
   Targets/Le64.cpp

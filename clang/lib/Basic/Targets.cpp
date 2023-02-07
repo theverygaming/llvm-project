@@ -21,6 +21,7 @@
 #include "Targets/BPF.h"
 #include "Targets/CSKY.h"
 #include "Targets/DirectX.h"
+#include "Targets/fox32.h"
 #include "Targets/Hexagon.h"
 #include "Targets/Lanai.h"
 #include "Targets/Le64.h"
@@ -119,6 +120,9 @@ TargetInfo *AllocateTarget(const llvm::Triple &Triple,
 
   case llvm::Triple::xcore:
     return new XCoreTargetInfo(Triple, Opts);
+
+  case llvm::Triple::fox32:
+    return new fox32TargetInfo(Triple, Opts);
 
   case llvm::Triple::hexagon:
     if (os == llvm::Triple::Linux &&
