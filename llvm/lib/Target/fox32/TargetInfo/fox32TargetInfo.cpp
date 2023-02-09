@@ -12,5 +12,3 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializefox32TargetInfo() {
   RegisterTarget<Triple::fox32, /*HasJIT=*/false> X(getThefox32Target(),
                                                     "fox32", "fox32", "fox32");
 }
-
-extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializefox32TargetMC() {}

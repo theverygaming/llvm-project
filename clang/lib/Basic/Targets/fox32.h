@@ -27,18 +27,15 @@ public:
       : TargetInfo(Triple) {
     // Description string has to be kept in sync with backend string at
     // llvm/lib/Target/fox32/fox32TargetMachine.cpp
-    resetDataLayout("e"
-                    // ELF name mangling
-                    "-m:e"
-                    // 32-bit pointers, 32-bit aligned
-                    "-p:32:32"
-                    // 64-bit integers, 64-bit aligned
-                    "-i64:64"
-                    // 32-bit native integer width i.e register are 32-bit
-                    "-n32"
-                    // 128-bit natural stack alignment
-                    "-S128");
-    SuitableAlign = 128;
+    resetDataLayout(
+        "e"        // little endian
+        "-m:e"     // ELF name mangling
+        "-p:32:32" // 32-bit pointers, 32-bit aligned
+        "-i64:64"  // 64-bit integers, 64-bit aligned
+        "-n32"     // 32-bit native integer width i.e register are 32-bit
+        "-S8"      // 8-bit natural stack alignment
+    );
+    SuitableAlign = 8;
     WCharType = SignedInt;
     WIntType = UnsignedInt;
     IntPtrType = SignedInt;

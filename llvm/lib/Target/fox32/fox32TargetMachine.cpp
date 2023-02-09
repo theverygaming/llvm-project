@@ -14,7 +14,14 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializefox32Target() {
 }
 
 static std::string computeDataLayout(const Triple &TT) {
-  return "e-m:e-p:32:32-i64:64-n32-S128"; // TODO
+  std::string ret = "";
+  ret += "e";        // Little endian
+  ret += "-m:e";     // ELF name mangling
+  ret += "-p:32:32"; // 32-bit pointers, 32-bit aligned
+  ret += "-i64:64";  // 64-bit integers, 64 bit aligned
+  ret += "-n32";     // 32-bit native integer width i.e register are 32-bit
+  ret += "-S8";      // 8-bit natural stack alignment
+  return ret;
 }
 
 static Reloc::Model getEffectiveRelocModel(const Triple &TT,
