@@ -40,6 +40,7 @@ public:
   // Wrapper needed for tblgenned pseudo lowering.
   bool lowerOperand(const MachineOperand &MO, MCOperand &MCOp) const {
     // TODO
+    printf("TODO: %s:%d\n", __FILE__, __LINE__);
     // return lowerfox32MachineOperandToMCOperand(MO, MCOp, *this);
     return true;
   }

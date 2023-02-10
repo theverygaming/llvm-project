@@ -1,6 +1,7 @@
 include "llvm/Target/Target.td"
 
 include "fox32RegisterInfo.td"
+include "fox32CallingConv.td"
 include "fox32InstrInfo.td"
 
 def : ProcessorModel<"fox32", NoSchedModel, []>; // TODO: figure out what NoSchedModel means

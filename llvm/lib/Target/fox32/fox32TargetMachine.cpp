@@ -1,5 +1,6 @@
 #include "fox32TargetMachine.h"
 #include "TargetInfo/fox32TargetInfo.h"
+#include "fox32.h"
 #include "llvm/CodeGen/Passes.h"
 #include "llvm/CodeGen/TargetLoweringObjectFileImpl.h"
 #include "llvm/CodeGen/TargetPassConfig.h"
@@ -70,8 +71,7 @@ void fox32PassConfig::addIRPasses() {
 }
 
 bool fox32PassConfig::addInstSelector() {
-  // TODO
-  // addPass(createfox32ISelDag(getfox32TargetMachine()));
+  addPass(createfox32ISelDag(getfox32TargetMachine()));
 
   return false;
 }

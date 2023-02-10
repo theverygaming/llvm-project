@@ -31,7 +31,7 @@ public:
   TargetPassConfig *createPassConfig(PassManagerBase &PM) override;
 
   TargetLoweringObjectFile *getObjFileLowering() const override {
-    return nullptr;
+    return TLOF.get();
   }
 };
 

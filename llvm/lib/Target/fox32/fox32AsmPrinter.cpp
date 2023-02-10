@@ -24,6 +24,7 @@ using namespace llvm;
 
 void fox32AsmPrinter::emitInstruction(const MachineInstr *MI) {
   // TODO
+  printf("TODO: %s:%d\n", __FILE__, __LINE__);
   // fox32_MC::verifyInstructionPredicates(MI->getOpcode(),
   // getSubtargetInfo().getFeatureBits());
 
@@ -51,5 +52,6 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializefox32AsmPrinter() {
 // TODO: supposed to be tablegenned
 bool fox32AsmPrinter::emitPseudoExpansionLowering(MCStreamer &OutStreamer,
                                                   const MachineInstr *MI) {
+                                                    printf("TODO: %s:%d\n", __FILE__, __LINE__);
   return true;
 }

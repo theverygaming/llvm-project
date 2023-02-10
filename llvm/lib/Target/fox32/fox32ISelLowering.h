@@ -1,0 +1,121 @@
+//=- fox32ISelLowering.h - fox32 DAG Lowering Interface -*- C++ -*-===//
+//
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
+//
+// This file defines the interfaces that fox32 uses to lower LLVM code into
+// a selection DAG.
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef LLVM_LIB_TARGET_FOX32_FOX32ISELLOWERING_H
+#define LLVM_LIB_TARGET_FOX32_FOX32ISELLOWERING_H
+
+#include "fox32.h"
+#include "fox32Subtarget.h"
+#include "llvm/CodeGen/CallingConvLower.h"
+#include "llvm/CodeGen/SelectionDAG.h"
+#include "llvm/CodeGen/TargetLowering.h"
+
+namespace llvm {
+class fox32Subtarget;
+struct fox32RegisterInfo;
+namespace fox32ISD {
+enum NodeType : unsigned {
+  FIRST_NUMBER = ISD::BUILTIN_OP_END,
+
+  // TODO: add more fox32ISDs
+  CALL,
+  RET,
+  // 32-bit shifts, directly matching the semantics of the named fox32
+  // instructions.
+  SLL_W,
+  SRA_W,
+  SRL_W,
+
+  // FPR<->GPR transfer operations
+  MOVGR2FR_W_LA64,
+  MOVFR2GR_S_LA64,
+
+  FTINT,
+
+  BSTRINS,
+  BSTRPICK,
+
+};
+} // end namespace fox32ISD
+
+class fox32TargetLowering : public TargetLowering {
+  const fox32Subtarget &Subtarget;
+
+public:
+  explicit fox32TargetLowering(const TargetMachine &TM,
+                               const fox32Subtarget &STI);
+
+  const fox32Subtarget &getSubtarget() const { return Subtarget; }
+
+  // Provide custom lowering hooks for some operations.
+  SDValue LowerOperation(SDValue Op, SelectionDAG &DAG) const override;
+  void ReplaceNodeResults(SDNode *N, SmallVectorImpl<SDValue> &Results,
+                          SelectionDAG &DAG) const override;
+
+  SDValue PerformDAGCombine(SDNode *N, DAGCombinerInfo &DCI) const override;
+
+  // This method returns the name of a target specific DAG node.
+  const char *getTargetNodeName(unsigned Opcode) const override;
+
+  // Lower incoming arguments, copy physregs into vregs.
+  SDValue LowerFormalArguments(SDValue Chain, CallingConv::ID CallConv,
+                               bool IsVarArg,
+                               const SmallVectorImpl<ISD::InputArg> &Ins,
+                               const SDLoc &DL, SelectionDAG &DAG,
+                               SmallVectorImpl<SDValue> &InVals) const override;
+  bool CanLowerReturn(CallingConv::ID CallConv, MachineFunction &MF,
+                      bool IsVarArg,
+                      const SmallVectorImpl<ISD::OutputArg> &Outs,
+                      LLVMContext &Context) const override;
+  SDValue LowerReturn(SDValue Chain, CallingConv::ID CallConv, bool IsVarArg,
+                      const SmallVectorImpl<ISD::OutputArg> &Outs,
+                      const SmallVectorImpl<SDValue> &OutVals, const SDLoc &DL,
+                      SelectionDAG &DAG) const override;
+  SDValue LowerCall(TargetLowering::CallLoweringInfo &CLI,
+                    SmallVectorImpl<SDValue> &InVals) const override;
+
+private:
+  /// Target-specific function used to lower fox32 calling conventions.
+  typedef bool fox32CCAssignFn(unsigned ValNo, MVT ValVT,
+                               CCValAssign::LocInfo LocInfo, CCState &State);
+
+  void analyzeInputArgs(CCState &CCInfo,
+                        const SmallVectorImpl<ISD::InputArg> &Ins,
+                        fox32CCAssignFn Fn) const;
+  void analyzeOutputArgs(CCState &CCInfo,
+                         const SmallVectorImpl<ISD::OutputArg> &Outs,
+                         fox32CCAssignFn Fn) const;
+
+  SDValue lowerGlobalAddress(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerShiftLeftParts(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerShiftRightParts(SDValue Op, SelectionDAG &DAG, bool IsSRA) const;
+
+  MachineBasicBlock *
+  EmitInstrWithCustomInserter(MachineInstr &MI,
+                              MachineBasicBlock *BB) const override;
+  SDValue lowerConstantPool(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerFP_TO_SINT(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerBITCAST(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerUINT_TO_FP(SDValue Op, SelectionDAG &DAG) const;
+
+  bool isFPImmLegal(const APFloat &Imm, EVT VT,
+                    bool ForCodeSize) const override;
+
+  bool shouldInsertFencesForAtomic(const Instruction *I) const override {
+    return isa<LoadInst>(I) || isa<StoreInst>(I);
+  }
+};
+
+} // end namespace llvm
+
+#endif // LLVM_LIB_TARGET_FOX32_FOX32ISELLOWERING_H

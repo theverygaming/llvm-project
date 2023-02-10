@@ -10,15 +10,16 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "fox32MCTargetDesc.h"
 #include "TargetInfo/fox32TargetInfo.h"
 #include "fox32.h"
 #include "fox32InstPrinter.h"
 #include "fox32MCAsmInfo.h"
 
 #include "llvm/CodeGen/TargetInstrInfo.h"
+#include "llvm/MC/MCDwarf.h"
 #include "llvm/MC/TargetRegistry.h"
 
-#define GET_REGINFO_ENUM
 #define GET_REGINFO_MC_DESC
 #include "fox32GenRegisterInfo.inc"
 
@@ -35,6 +36,7 @@ static MCRegisterInfo *createfox32MCRegisterInfo(const Triple &TT) {
   MCRegisterInfo *X = new MCRegisterInfo();
   Initfox32MCRegisterInfo(
       X, fox32::X1); // TODO: figure out why this needs the register passed???
+  // printf("TODO: %s:%d\n", __FILE__, __LINE__);
   return X;
 }
 
@@ -58,10 +60,11 @@ static MCAsmInfo *createfox32MCAsmInfo(const MCRegisterInfo &MRI,
   MCAsmInfo *MAI = new fox32MCAsmInfo(TT);
 
   // TODO
+  // printf("TODO: %s:%d\n", __FILE__, __LINE__);
   // Initial state of the frame pointer is sp(r3).
-  // MCRegister SP = MRI.getDwarfRegNum(fox32::R3, true);
-  // MCCFIInstruction Inst = MCCFIInstruction::cfiDefCfa(nullptr, SP, 0);
-  // MAI->addInitialFrameState(Inst);
+  MCRegister SP = MRI.getDwarfRegNum(fox32::X3, true);
+  MCCFIInstruction Inst = MCCFIInstruction::cfiDefCfa(nullptr, SP, 0);
+  MAI->addInitialFrameState(Inst);
 
   return MAI;
 }
