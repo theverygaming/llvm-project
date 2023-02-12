@@ -20,6 +20,7 @@ using namespace llvm;
 void fox32MCAsmInfo::anchor() {}
 
 fox32MCAsmInfo::fox32MCAsmInfo(const Triple &TT) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   CodePointerSize = CalleeSaveStackSlotSize = 4;
   AlignmentIsInBytes = false;
   Data8bitsDirective = "\t.byte\t";

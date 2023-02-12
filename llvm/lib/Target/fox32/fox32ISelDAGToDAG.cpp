@@ -20,6 +20,7 @@ using namespace llvm;
 #define DEBUG_TYPE "fox32-isel"
 
 void fox32DAGToDAGISel::Select(SDNode *Node) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   // If we have a custom node, we have already selected.
   if (Node->isMachineOpcode()) {
     LLVM_DEBUG(dbgs() << "== "; Node->dump(CurDAG); dbgs() << "\n");
@@ -80,6 +81,7 @@ void fox32DAGToDAGISel::Select(SDNode *Node) {
 }
 
 bool fox32DAGToDAGISel::SelectBaseAddr(SDValue Addr, SDValue &Base) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   // If this is FrameIndex, select it directly. Otherwise just let it get
   // selected to a register independently.
   if (auto *FIN = dyn_cast<FrameIndexSDNode>(Addr))
@@ -92,6 +94,7 @@ bool fox32DAGToDAGISel::SelectBaseAddr(SDValue Addr, SDValue &Base) {
 
 bool fox32DAGToDAGISel::selectShiftMask(SDValue N, unsigned ShiftWidth,
                                         SDValue &ShAmt) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   // Shift instructions on fox32 only read the lower 5 or 6 bits of the
   // shift amount. If there is an AND on the shift amount, we can bypass it if
   // it doesn't affect any of those bits.
@@ -136,6 +139,7 @@ bool fox32DAGToDAGISel::selectShiftMask(SDValue N, unsigned ShiftWidth,
 }
 
 bool fox32DAGToDAGISel::selectSExti32(SDValue N, SDValue &Val) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   if (N.getOpcode() == ISD::SIGN_EXTEND_INREG &&
       cast<VTSDNode>(N.getOperand(1))->getVT() == MVT::i32) {
     Val = N.getOperand(0);
@@ -151,6 +155,7 @@ bool fox32DAGToDAGISel::selectSExti32(SDValue N, SDValue &Val) {
 }
 
 bool fox32DAGToDAGISel::selectZExti32(SDValue N, SDValue &Val) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   if (N.getOpcode() == ISD::AND) {
     auto *C = dyn_cast<ConstantSDNode>(N.getOperand(1));
     if (C && C->getZExtValue() == UINT64_C(0xFFFFFFFF)) {
@@ -171,5 +176,6 @@ bool fox32DAGToDAGISel::selectZExti32(SDValue N, SDValue &Val) {
 // This pass converts a legalized DAG into a fox32-specific DAG, ready
 // for instruction scheduling.
 FunctionPass *llvm::createfox32ISelDag(fox32TargetMachine &TM) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   return new fox32DAGToDAGISel(TM);
 }

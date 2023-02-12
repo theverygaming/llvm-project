@@ -26,7 +26,9 @@ public:
       : TargetFrameLowering(StackGrowsDown,
                             /*StackAlignment=*/Align(16),
                             /*LocalAreaOffset=*/0),
-        STI(STI) {}
+        STI(STI) {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
+  }
 
   void emitPrologue(MachineFunction &MF, MachineBasicBlock &MBB) const override;
   void emitEpilogue(MachineFunction &MF, MachineBasicBlock &MBB) const override;
@@ -37,6 +39,7 @@ public:
   MachineBasicBlock::iterator
   eliminateCallFramePseudoInstr(MachineFunction &MF, MachineBasicBlock &MBB,
                                 MachineBasicBlock::iterator MI) const override {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
     return MBB.erase(MI);
   }
 

@@ -15,6 +15,10 @@ add_llvm_target(fox32CodeGen
   fox32AsmPrinter.cpp
   fox32ISelDAGToDAG.cpp
   fox32ISelLowering.cpp
+  fox32Subtarget.cpp
+  fox32RegisterInfo.cpp
+  fox32FrameLowering.cpp
+  fox32InstrInfo.cpp
 
   LINK_COMPONENTS
   Analysis

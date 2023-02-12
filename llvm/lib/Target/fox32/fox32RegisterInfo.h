@@ -36,6 +36,7 @@ struct fox32RegisterInfo : public fox32GenRegisterInfo {
   const TargetRegisterClass *
   getPointerRegClass(const MachineFunction &MF,
                      unsigned Kind = 0) const override {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
     return &fox32::GPRRegClass;
   }
 

@@ -15,7 +15,6 @@
 #define LLVM_LIB_TARGET_FOX32_FOX32ISELLOWERING_H
 
 #include "fox32.h"
-#include "fox32Subtarget.h"
 #include "llvm/CodeGen/CallingConvLower.h"
 #include "llvm/CodeGen/SelectionDAG.h"
 #include "llvm/CodeGen/TargetLowering.h"
@@ -55,7 +54,7 @@ public:
   explicit fox32TargetLowering(const TargetMachine &TM,
                                const fox32Subtarget &STI);
 
-  const fox32Subtarget &getSubtarget() const { return Subtarget; }
+  const fox32Subtarget &getSubtarget() const { printf("%s:%s:%d\n", __func__, __FILE__, __LINE__); return Subtarget; }
 
   // Provide custom lowering hooks for some operations.
   SDValue LowerOperation(SDValue Op, SelectionDAG &DAG) const override;

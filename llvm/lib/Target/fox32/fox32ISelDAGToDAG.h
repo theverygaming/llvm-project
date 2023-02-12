@@ -28,10 +28,12 @@ public:
   explicit fox32DAGToDAGISel(fox32TargetMachine &TM) : SelectionDAGISel(TM) {}
 
   StringRef getPassName() const override {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
     return "fox32 DAG->DAG Pattern Instruction Selection";
   }
 
   bool runOnMachineFunction(MachineFunction &MF) override {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
     Subtarget = &MF.getSubtarget<fox32Subtarget>();
     return SelectionDAGISel::runOnMachineFunction(MF);
   }
@@ -42,9 +44,11 @@ public:
 
   bool selectShiftMask(SDValue N, unsigned ShiftWidth, SDValue &ShAmt);
   bool selectShiftMaskGRLen(SDValue N, SDValue &ShAmt) {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
     return selectShiftMask(N, Subtarget->getGRLen(), ShAmt);
   }
   bool selectShiftMask32(SDValue N, SDValue &ShAmt) {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
     return selectShiftMask(N, 32, ShAmt);
   }
 

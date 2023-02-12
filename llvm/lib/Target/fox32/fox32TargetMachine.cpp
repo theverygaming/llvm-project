@@ -9,12 +9,14 @@
 using namespace llvm;
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializefox32Target() {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   // Register the target.
   //- Little endian Target Machine
   RegisterTargetMachine<fox32TargetMachine> X(getThefox32Target());
 }
 
 static std::string computeDataLayout(const Triple &TT) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   std::string ret = "";
   ret += "e";        // Little endian
   ret += "-m:e";     // ELF name mangling
@@ -27,6 +29,7 @@ static std::string computeDataLayout(const Triple &TT) {
 
 static Reloc::Model getEffectiveRelocModel(const Triple &TT,
                                            Optional<Reloc::Model> RM) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   return RM.value_or(Reloc::Static);
 }
 
@@ -40,18 +43,47 @@ fox32TargetMachine::fox32TargetMachine(const Target &T, const Triple &TT,
                         getEffectiveRelocModel(TT, RM),
                         getEffectiveCodeModel(CM, CodeModel::Small), OL),
       TLOF(std::make_unique<TargetLoweringObjectFileELF>()) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   initAsmInfo();
 }
 
 fox32TargetMachine::~fox32TargetMachine() = default;
 
+const fox32Subtarget *
+fox32TargetMachine::getSubtargetImpl(const Function &F) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
+  Attribute CPUAttr = F.getFnAttribute("target-cpu");
+  Attribute FSAttr = F.getFnAttribute("target-features");
+
+  std::string CPU = !CPUAttr.hasAttribute(Attribute::None)
+                        ? CPUAttr.getValueAsString().str()
+                        : TargetCPU;
+  std::string FS = !FSAttr.hasAttribute(Attribute::None)
+                       ? FSAttr.getValueAsString().str()
+                       : TargetFS;
+
+  auto &I = SubtargetMap[CPU + FS];
+  if (!I) {
+    // This needs to be done before we create a new subtarget since any
+    // creation will depend on the TM and the code generation flags on the
+    // function that reside in TargetOptions.
+    resetTargetOptions(F);
+    I = std::make_unique<fox32Subtarget>(TargetTriple, CPU, FS, *this);
+  }
+  printf("RETURN %s:%s:%d\n", __func__, __FILE__, __LINE__);
+  return I.get();
+}
+
 namespace {
 class fox32PassConfig : public TargetPassConfig {
 public:
   fox32PassConfig(fox32TargetMachine &TM, PassManagerBase &PM)
-      : TargetPassConfig(TM, PM) {}
+      : TargetPassConfig(TM, PM) {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
+  }
 
   fox32TargetMachine &getfox32TargetMachine() const {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
     return getTM<fox32TargetMachine>();
   }
 
@@ -61,17 +93,19 @@ public:
 } // end namespace
 
 TargetPassConfig *fox32TargetMachine::createPassConfig(PassManagerBase &PM) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   return new fox32PassConfig(*this, PM);
 }
 
 void fox32PassConfig::addIRPasses() {
-  addPass(createAtomicExpandPass());
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
+  // addPass(createAtomicExpandPass());
 
   TargetPassConfig::addIRPasses();
 }
 
 bool fox32PassConfig::addInstSelector() {
   addPass(createfox32ISelDag(getfox32TargetMachine()));
-
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   return false;
 }

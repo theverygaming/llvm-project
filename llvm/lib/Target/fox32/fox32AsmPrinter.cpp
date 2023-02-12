@@ -41,11 +41,13 @@ void fox32AsmPrinter::emitInstruction(const MachineInstr *MI) {
 
 bool fox32AsmPrinter::runOnMachineFunction(MachineFunction &MF) {
   AsmPrinter::runOnMachineFunction(MF);
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   return true;
 }
 
 // Force static initialization.
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializefox32AsmPrinter() {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   RegisterAsmPrinter<fox32AsmPrinter> X(getThefox32Target());
 }
 

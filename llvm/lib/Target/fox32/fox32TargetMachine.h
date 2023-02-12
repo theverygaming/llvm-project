@@ -13,12 +13,14 @@
 #ifndef LLVM_LIB_TARGET_FOX32_FOX32TARGETMACHINE_H
 #define LLVM_LIB_TARGET_FOX32_FOX32TARGETMACHINE_H
 
+#include "fox32Subtarget.h"
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
 
 class fox32TargetMachine : public LLVMTargetMachine {
   std::unique_ptr<TargetLoweringObjectFile> TLOF;
+  mutable StringMap<std::unique_ptr<fox32Subtarget>> SubtargetMap;
 
 public:
   fox32TargetMachine(const Target &T, const Triple &TT, StringRef CPU,
@@ -27,10 +29,14 @@ public:
                      CodeGenOpt::Level OL, bool JIT);
   ~fox32TargetMachine() override;
 
+  const fox32Subtarget *getSubtargetImpl(const Function &F) const override;
+  const fox32Subtarget *getSubtargetImpl() const = delete;
+
   // Pass Pipeline Configuration
   TargetPassConfig *createPassConfig(PassManagerBase &PM) override;
 
   TargetLoweringObjectFile *getObjFileLowering() const override {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
     return TLOF.get();
   }
 };

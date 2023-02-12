@@ -33,6 +33,7 @@ static cl::opt<bool> ZeroDivCheck("fox32-check-zero-division", cl::Hidden,
 fox32TargetLowering::fox32TargetLowering(const TargetMachine &TM,
                                          const fox32Subtarget &STI)
     : TargetLowering(TM), Subtarget(STI) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
 
   MVT GRLenVT = Subtarget.getGRLenVT();
   // Set up the register classes.
@@ -49,36 +50,13 @@ fox32TargetLowering::fox32TargetLowering(const TargetMachine &TM,
 
   setOperationAction({ISD::GlobalAddress, ISD::ConstantPool}, GRLenVT, Custom);
 
-  if (Subtarget.is64Bit()) {
-    setOperationAction(ISD::SHL, MVT::i32, Custom);
-    setOperationAction(ISD::SRA, MVT::i32, Custom);
-    setOperationAction(ISD::SRL, MVT::i32, Custom);
-    setOperationAction(ISD::FP_TO_SINT, MVT::i32, Custom);
-    setOperationAction(ISD::BITCAST, MVT::i32, Custom);
-    if (Subtarget.hasBasicF() && !Subtarget.hasBasicD())
-      setOperationAction(ISD::FP_TO_UINT, MVT::i32, Custom);
-  }
-
   static const ISD::CondCode FPCCToExpand[] = {ISD::SETOGT, ISD::SETOGE,
                                                ISD::SETUGT, ISD::SETUGE};
-
-  if (Subtarget.hasBasicF()) {
-    setCondCodeAction(FPCCToExpand, MVT::f32, Expand);
-    setOperationAction(ISD::SELECT_CC, MVT::f32, Expand);
-  }
-  if (Subtarget.hasBasicD()) {
-    setCondCodeAction(FPCCToExpand, MVT::f64, Expand);
-    setOperationAction(ISD::SELECT_CC, MVT::f64, Expand);
-    setLoadExtAction(ISD::EXTLOAD, MVT::f64, MVT::f32, Expand);
-    setLoadExtAction(ISD::EXTLOAD, MVT::f64, MVT::f32, Expand);
-  }
 
   setOperationAction(ISD::BR_CC, GRLenVT, Expand);
   setOperationAction(ISD::SELECT_CC, GRLenVT, Expand);
   setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i1, Expand);
   setOperationAction({ISD::SMUL_LOHI, ISD::UMUL_LOHI}, GRLenVT, Expand);
-  if (!Subtarget.is64Bit())
-    setLibcallName(RTLIB::MUL_I128, nullptr);
 
   setOperationAction(ISD::FP_TO_UINT, GRLenVT, Custom);
   setOperationAction(ISD::UINT_TO_FP, GRLenVT, Custom);
@@ -103,6 +81,7 @@ fox32TargetLowering::fox32TargetLowering(const TargetMachine &TM,
 
 SDValue fox32TargetLowering::LowerOperation(SDValue Op,
                                             SelectionDAG &DAG) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   switch (Op.getOpcode()) {
   default:
     report_fatal_error("unimplemented operand");
@@ -117,9 +96,6 @@ SDValue fox32TargetLowering::LowerOperation(SDValue Op,
   case ISD::SHL:
   case ISD::SRA:
   case ISD::SRL:
-    // This can be called for an i32 shift amount that needs to be promoted.
-    assert(Op.getOperand(1).getValueType() == MVT::i32 && Subtarget.is64Bit() &&
-           "Unexpected custom legalisation");
     return SDValue();
   case ISD::ConstantPool:
     return lowerConstantPool(Op, DAG);
@@ -136,6 +112,7 @@ SDValue fox32TargetLowering::LowerOperation(SDValue Op,
 
 SDValue fox32TargetLowering::lowerUINT_TO_FP(SDValue Op,
                                              SelectionDAG &DAG) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
 
   SDLoc DL(Op);
   auto &TLI = DAG.getTargetLoweringInfo();
@@ -152,28 +129,18 @@ SDValue fox32TargetLowering::lowerUINT_TO_FP(SDValue Op,
 }
 
 SDValue fox32TargetLowering::lowerBITCAST(SDValue Op, SelectionDAG &DAG) const {
-
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   SDLoc DL(Op);
   SDValue Op0 = Op.getOperand(0);
 
-  if (Op.getValueType() == MVT::f32 && Op0.getValueType() == MVT::i32 &&
-      Subtarget.is64Bit() && Subtarget.hasBasicF()) {
-    SDValue NewOp0 = DAG.getNode(ISD::ANY_EXTEND, DL, MVT::i64, Op0);
-    return DAG.getNode(fox32ISD::MOVGR2FR_W_LA64, DL, MVT::f32, NewOp0);
-  }
   return Op;
 }
 
 SDValue fox32TargetLowering::lowerFP_TO_SINT(SDValue Op,
                                              SelectionDAG &DAG) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
 
   SDLoc DL(Op);
-
-  if (Op.getValueSizeInBits() > 32 && Subtarget.hasBasicF() &&
-      !Subtarget.hasBasicD()) {
-    SDValue Dst = DAG.getNode(fox32ISD::FTINT, DL, MVT::f32, Op.getOperand(0));
-    return DAG.getNode(fox32ISD::MOVFR2GR_S_LA64, DL, MVT::i64, Dst);
-  }
 
   EVT FPTy = EVT::getFloatingPointVT(Op.getValueSizeInBits());
   SDValue Trunc = DAG.getNode(fox32ISD::FTINT, DL, FPTy, Op.getOperand(0));
@@ -182,6 +149,7 @@ SDValue fox32TargetLowering::lowerFP_TO_SINT(SDValue Op,
 
 SDValue fox32TargetLowering::lowerConstantPool(SDValue Op,
                                                SelectionDAG &DAG) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   SDLoc DL(Op);
   EVT Ty = Op.getValueType();
   ConstantPoolSDNode *N = cast<ConstantPoolSDNode>(Op);
@@ -201,6 +169,7 @@ SDValue fox32TargetLowering::lowerConstantPool(SDValue Op,
 
 SDValue fox32TargetLowering::lowerGlobalAddress(SDValue Op,
                                                 SelectionDAG &DAG) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   SDLoc DL(Op);
   EVT Ty = getPointerTy(DAG.getDataLayout());
   const GlobalValue *GV = cast<GlobalAddressSDNode>(Op)->getGlobal();
@@ -218,6 +187,7 @@ SDValue fox32TargetLowering::lowerGlobalAddress(SDValue Op,
 
 SDValue fox32TargetLowering::lowerShiftLeftParts(SDValue Op,
                                                  SelectionDAG &DAG) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   SDLoc DL(Op);
   SDValue Lo = Op.getOperand(0);
   SDValue Hi = Op.getOperand(1);
@@ -257,6 +227,7 @@ SDValue fox32TargetLowering::lowerShiftLeftParts(SDValue Op,
 
 SDValue fox32TargetLowering::lowerShiftRightParts(SDValue Op, SelectionDAG &DAG,
                                                   bool IsSRA) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   SDLoc DL(Op);
   SDValue Lo = Op.getOperand(0);
   SDValue Hi = Op.getOperand(1);
@@ -310,6 +281,7 @@ SDValue fox32TargetLowering::lowerShiftRightParts(SDValue Op, SelectionDAG &DAG,
 // Returns the opcode of the target-specific SDNode that implements the 32-bit
 // form of the given Opcode.
 static fox32ISD::NodeType getfox32WOpcode(unsigned Opcode) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   switch (Opcode) {
   default:
     llvm_unreachable("Unexpected opcode");
@@ -329,6 +301,7 @@ static fox32ISD::NodeType getfox32WOpcode(unsigned Opcode) {
 // type i8/i16/i32 is lost.
 static SDValue customLegalizeToWOp(SDNode *N, SelectionDAG &DAG,
                                    unsigned ExtOpc = ISD::ANY_EXTEND) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   SDLoc DL(N);
   fox32ISD::NodeType WOpcode = getfox32WOpcode(N->getOpcode());
   SDValue NewOp0 = DAG.getNode(ExtOpc, DL, MVT::i64, N->getOperand(0));
@@ -341,6 +314,7 @@ static SDValue customLegalizeToWOp(SDNode *N, SelectionDAG &DAG,
 void fox32TargetLowering::ReplaceNodeResults(SDNode *N,
                                              SmallVectorImpl<SDValue> &Results,
                                              SelectionDAG &DAG) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   SDLoc DL(N);
   switch (N->getOpcode()) {
   default:
@@ -348,16 +322,12 @@ void fox32TargetLowering::ReplaceNodeResults(SDNode *N,
   case ISD::SHL:
   case ISD::SRA:
   case ISD::SRL:
-    assert(N->getValueType(0) == MVT::i32 && Subtarget.is64Bit() &&
-           "Unexpected custom legalisation");
     if (N->getOperand(1).getOpcode() != ISD::Constant) {
       Results.push_back(customLegalizeToWOp(N, DAG));
       break;
     }
     break;
   case ISD::FP_TO_SINT: {
-    assert(N->getValueType(0) == MVT::i32 && Subtarget.is64Bit() &&
-           "Unexpected custom legalisation");
     SDValue Src = N->getOperand(0);
     EVT VT = EVT::getFloatingPointVT(N->getValueSizeInBits(0));
     SDValue Dst = DAG.getNode(fox32ISD::FTINT, DL, VT, Src);
@@ -368,16 +338,9 @@ void fox32TargetLowering::ReplaceNodeResults(SDNode *N,
     EVT VT = N->getValueType(0);
     SDValue Src = N->getOperand(0);
     EVT SrcVT = Src.getValueType();
-    if (VT == MVT::i32 && SrcVT == MVT::f32 && Subtarget.is64Bit() &&
-        Subtarget.hasBasicF()) {
-      SDValue Dst = DAG.getNode(fox32ISD::MOVFR2GR_S_LA64, DL, MVT::i64, Src);
-      Results.push_back(DAG.getNode(ISD::TRUNCATE, DL, MVT::i32, Dst));
-    }
     break;
   }
   case ISD::FP_TO_UINT: {
-    assert(N->getValueType(0) == MVT::i32 && Subtarget.is64Bit() &&
-           "Unexpected custom legalisation");
     auto &TLI = DAG.getTargetLoweringInfo();
     SDValue Tmp1, Tmp2;
     TLI.expandFP_TO_UINT(N, Tmp1, Tmp2, DAG);
@@ -390,6 +353,7 @@ void fox32TargetLowering::ReplaceNodeResults(SDNode *N,
 static SDValue performANDCombine(SDNode *N, SelectionDAG &DAG,
                                  TargetLowering::DAGCombinerInfo &DCI,
                                  const fox32Subtarget &Subtarget) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   if (DCI.isBeforeLegalizeOps())
     return SDValue();
 
@@ -410,6 +374,7 @@ static SDValue performANDCombine(SDNode *N, SelectionDAG &DAG,
     return SDValue();
 
   if (FirstOperandOpc == ISD::SRA || FirstOperandOpc == ISD::SRL) {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
     // Pattern match BSTRPICK.
     //  $dst = and ((sra or srl) $src , lsb), (2**len - 1)
     //  => BSTRPICK $dst, $src, msb, lsb
@@ -453,6 +418,7 @@ static SDValue performANDCombine(SDNode *N, SelectionDAG &DAG,
 static SDValue performSRLCombine(SDNode *N, SelectionDAG &DAG,
                                  TargetLowering::DAGCombinerInfo &DCI,
                                  const fox32Subtarget &Subtarget) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   if (DCI.isBeforeLegalizeOps())
     return SDValue();
 
@@ -494,6 +460,7 @@ static SDValue performSRLCombine(SDNode *N, SelectionDAG &DAG,
 static SDValue performORCombine(SDNode *N, SelectionDAG &DAG,
                                 TargetLowering::DAGCombinerInfo &DCI,
                                 const fox32Subtarget &Subtarget) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   MVT GRLenVT = Subtarget.getGRLenVT();
   EVT ValTy = N->getValueType(0);
   SDValue N0 = N->getOperand(0), N1 = N->getOperand(1);
@@ -711,6 +678,7 @@ Retry2:
 
 SDValue fox32TargetLowering::PerformDAGCombine(SDNode *N,
                                                DAGCombinerInfo &DCI) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   SelectionDAG &DAG = DCI.DAG;
   switch (N->getOpcode()) {
   default:
@@ -728,6 +696,7 @@ SDValue fox32TargetLowering::PerformDAGCombine(SDNode *N,
 static MachineBasicBlock *insertDivByZeroTrap(MachineInstr &MI,
                                               MachineBasicBlock &MBB,
                                               const TargetInstrInfo &TII) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   if (!ZeroDivCheck)
     return &MBB;
 
@@ -757,6 +726,7 @@ static MachineBasicBlock *insertDivByZeroTrap(MachineInstr &MI,
 MachineBasicBlock *
 fox32TargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
                                                  MachineBasicBlock *BB) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
 
   switch (MI.getOpcode()) {
   default:
@@ -768,6 +738,7 @@ fox32TargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
 }
 
 const char *fox32TargetLowering::getTargetNodeName(unsigned Opcode) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   switch ((fox32ISD::NodeType)Opcode) {
   case fox32ISD::FIRST_NUMBER:
     break;
@@ -804,6 +775,7 @@ const MCPhysReg ArgGPRs[] = {fox32::X4, fox32::X5, fox32::X6,  fox32::X7,
 // Implements the fox32 calling convention. Returns true upon failure.
 static bool CC_fox32(unsigned ValNo, MVT ValVT, CCValAssign::LocInfo LocInfo,
                      CCState &State) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   // Allocate to a register if possible.
   Register Reg;
 
@@ -820,6 +792,7 @@ static bool CC_fox32(unsigned ValNo, MVT ValVT, CCValAssign::LocInfo LocInfo,
 void fox32TargetLowering::analyzeInputArgs(
     CCState &CCInfo, const SmallVectorImpl<ISD::InputArg> &Ins,
     fox32CCAssignFn Fn) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   for (unsigned i = 0, e = Ins.size(); i != e; ++i) {
     MVT ArgVT = Ins[i].VT;
 
@@ -834,6 +807,7 @@ void fox32TargetLowering::analyzeInputArgs(
 void fox32TargetLowering::analyzeOutputArgs(
     CCState &CCInfo, const SmallVectorImpl<ISD::OutputArg> &Outs,
     fox32CCAssignFn Fn) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   for (unsigned i = 0, e = Outs.size(); i != e; ++i) {
     MVT ArgVT = Outs[i].VT;
 
@@ -848,6 +822,7 @@ void fox32TargetLowering::analyzeOutputArgs(
 static SDValue unpackFromRegLoc(SelectionDAG &DAG, SDValue Chain,
                                 const CCValAssign &VA, const SDLoc &DL,
                                 const fox32TargetLowering &TLI) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   MachineFunction &MF = DAG.getMachineFunction();
   MachineRegisterInfo &RegInfo = MF.getRegInfo();
   EVT LocVT = VA.getLocVT();
@@ -863,6 +838,7 @@ SDValue fox32TargetLowering::LowerFormalArguments(
     SDValue Chain, CallingConv::ID CallConv, bool IsVarArg,
     const SmallVectorImpl<ISD::InputArg> &Ins, const SDLoc &DL,
     SelectionDAG &DAG, SmallVectorImpl<SDValue> &InVals) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
 
   MachineFunction &MF = DAG.getMachineFunction();
 
@@ -889,6 +865,7 @@ SDValue fox32TargetLowering::LowerFormalArguments(
 // and output parameter nodes.
 SDValue fox32TargetLowering::LowerCall(CallLoweringInfo &CLI,
                                        SmallVectorImpl<SDValue> &InVals) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   SelectionDAG &DAG = CLI.DAG;
   SDLoc &DL = CLI.DL;
   SmallVectorImpl<ISD::OutputArg> &Outs = CLI.Outs;
@@ -1013,6 +990,7 @@ SDValue fox32TargetLowering::LowerCall(CallLoweringInfo &CLI,
 bool fox32TargetLowering::CanLowerReturn(
     CallingConv::ID CallConv, MachineFunction &MF, bool IsVarArg,
     const SmallVectorImpl<ISD::OutputArg> &Outs, LLVMContext &Context) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   // Any return value split in to more than two values can't be returned
   // directly.
   return Outs.size() <= 2;
@@ -1024,6 +1002,7 @@ fox32TargetLowering::LowerReturn(SDValue Chain, CallingConv::ID CallConv,
                                  const SmallVectorImpl<ISD::OutputArg> &Outs,
                                  const SmallVectorImpl<SDValue> &OutVals,
                                  const SDLoc &DL, SelectionDAG &DAG) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   // Stores the assignment of the return value to a location.
   SmallVector<CCValAssign> RVLocs;
 
@@ -1060,11 +1039,8 @@ fox32TargetLowering::LowerReturn(SDValue Chain, CallingConv::ID CallConv,
 
 bool fox32TargetLowering::isFPImmLegal(const APFloat &Imm, EVT VT,
                                        bool ForCodeSize) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   assert((VT == MVT::f32 || VT == MVT::f64) && "Unexpected VT");
 
-  if (VT == MVT::f32 && !Subtarget.hasBasicF())
-    return false;
-  if (VT == MVT::f64 && !Subtarget.hasBasicD())
-    return false;
   return (Imm.isZero() || Imm.isExactlyValue(+1.0));
 }

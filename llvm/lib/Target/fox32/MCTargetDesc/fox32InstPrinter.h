@@ -9,7 +9,9 @@ class fox32InstPrinter : public MCInstPrinter {
 public:
   fox32InstPrinter(const MCAsmInfo &MAI, const MCInstrInfo &MII,
                    const MCRegisterInfo &MRI)
-      : MCInstPrinter(MAI, MII, MRI) {}
+      : MCInstPrinter(MAI, MII, MRI) {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
+  }
 
   void printInst(const MCInst *MI, uint64_t Address, StringRef Annot,
                  const MCSubtargetInfo &STI, raw_ostream &O) override;

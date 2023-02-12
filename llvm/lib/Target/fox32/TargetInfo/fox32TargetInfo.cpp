@@ -4,11 +4,13 @@
 using namespace llvm;
 
 Target &llvm::getThefox32Target() {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   static Target Thefox32Target;
   return Thefox32Target;
 }
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializefox32TargetInfo() {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   RegisterTarget<Triple::fox32, /*HasJIT=*/false> X(getThefox32Target(),
                                                     "fox32", "fox32", "fox32");
 }

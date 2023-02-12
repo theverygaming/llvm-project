@@ -26,7 +26,9 @@ class LLVM_LIBRARY_VISIBILITY fox32AsmPrinter : public AsmPrinter {
 public:
   explicit fox32AsmPrinter(TargetMachine &TM,
                            std::unique_ptr<MCStreamer> Streamer)
-      : AsmPrinter(TM, std::move(Streamer)), STI(TM.getMCSubtargetInfo()) {}
+      : AsmPrinter(TM, std::move(Streamer)), STI(TM.getMCSubtargetInfo()) {
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
+  }
 
   StringRef getPassName() const override { return "fox32 Assembly Printer"; }
 
@@ -40,6 +42,7 @@ public:
   // Wrapper needed for tblgenned pseudo lowering.
   bool lowerOperand(const MachineOperand &MO, MCOperand &MCOp) const {
     // TODO
+    printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
     printf("TODO: %s:%d\n", __FILE__, __LINE__);
     // return lowerfox32MachineOperandToMCOperand(MO, MCOp, *this);
     return true;

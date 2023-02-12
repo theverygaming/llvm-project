@@ -31,18 +31,21 @@ using namespace llvm;
 void fox32InstPrinter::printInst(const MCInst *MI, uint64_t Address,
                                  StringRef Annot, const MCSubtargetInfo &STI,
                                  raw_ostream &O) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   if (!printAliasInstr(MI, Address, STI, O))
     printInstruction(MI, Address, STI, O);
   printAnnotation(O, Annot);
 }
 
 void fox32InstPrinter::printRegName(raw_ostream &O, unsigned RegNo) const {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   O << '$' << getRegisterName(RegNo);
 }
 
 void fox32InstPrinter::printOperand(const MCInst *MI, unsigned OpNo,
                                     const MCSubtargetInfo &STI,
                                     raw_ostream &O) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   const MCOperand &MO = MI->getOperand(OpNo);
 
   if (MO.isReg()) {
@@ -60,6 +63,7 @@ void fox32InstPrinter::printOperand(const MCInst *MI, unsigned OpNo,
 }
 
 const char *fox32InstPrinter::getRegisterName(unsigned RegNo) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   // Default print reg alias name
   return getRegisterName(RegNo, fox32::RegAliasName);
 }

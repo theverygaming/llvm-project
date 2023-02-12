@@ -37,12 +37,14 @@ static MCRegisterInfo *createfox32MCRegisterInfo(const Triple &TT) {
   Initfox32MCRegisterInfo(
       X, fox32::X1); // TODO: figure out why this needs the register passed???
   // printf("TODO: %s:%d\n", __FILE__, __LINE__);
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   return X;
 }
 
 static MCInstrInfo *createfox32MCInstrInfo() {
   MCInstrInfo *X = new MCInstrInfo();
   Initfox32MCInstrInfo(X);
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   return X;
 }
 
@@ -51,6 +53,7 @@ createfox32MCSubtargetInfo(const Triple &TT, StringRef CPU, StringRef FS) {
   if (CPU.empty()) {
     CPU = "fox32";
   }
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   return createfox32MCSubtargetInfoImpl(TT, CPU, /*TuneCPU*/ CPU, FS);
 }
 
@@ -65,7 +68,7 @@ static MCAsmInfo *createfox32MCAsmInfo(const MCRegisterInfo &MRI,
   MCRegister SP = MRI.getDwarfRegNum(fox32::X3, true);
   MCCFIInstruction Inst = MCCFIInstruction::cfiDefCfa(nullptr, SP, 0);
   MAI->addInitialFrameState(Inst);
-
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   return MAI;
 }
 
@@ -74,10 +77,12 @@ static MCInstPrinter *createfox32MCInstPrinter(const Triple &T,
                                                const MCAsmInfo &MAI,
                                                const MCInstrInfo &MII,
                                                const MCRegisterInfo &MRI) {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   return new fox32InstPrinter(MAI, MII, MRI);
 }
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializefox32TargetMC() {
+  printf("%s:%s:%d\n", __func__, __FILE__, __LINE__);
   for (Target *T : {&getThefox32Target()}) {
     TargetRegistry::RegisterMCRegInfo(*T, createfox32MCRegisterInfo);
     TargetRegistry::RegisterMCInstrInfo(*T, createfox32MCInstrInfo);
