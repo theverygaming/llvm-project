@@ -57,6 +57,7 @@ public:
     bpfeb,          // eBPF or extended BPF or 64-bit BPF (big endian)
     csky,           // CSKY: csky
     dxil,           // DXIL 32-bit DirectX bytecode
+    fox32,          // fox32
     hexagon,        // Hexagon: hexagon
     loongarch32,    // LoongArch (32-bit): loongarch32
     loongarch64,    // LoongArch (64-bit): loongarch64
@@ -74,7 +75,6 @@ public:
     amdgcn,         // AMDGCN: AMD GCN GPUs
     riscv32,        // RISC-V (32-bit): riscv32
     riscv64,        // RISC-V (64-bit): riscv64
-    riscw,          // RISC-W: RISC-V 32-bit
     sparc,          // Sparc: sparc
     sparcv9,        // Sparcv9: Sparcv9
     sparcel,        // Sparc: (endianness = little). NB: 'Sparcle' is a CPU variant

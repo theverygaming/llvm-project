@@ -38,6 +38,7 @@ StringRef Triple::getArchTypeName(ArchType Kind) {
   case bpfel:          return "bpfel";
   case csky:           return "csky";
   case dxil:           return "dxil";
+  case fox32:          return "fox32";
   case hexagon:        return "hexagon";
   case hsail64:        return "hsail64";
   case hsail:          return "hsail";
@@ -64,7 +65,6 @@ StringRef Triple::getArchTypeName(ArchType Kind) {
   case renderscript64: return "renderscript64";
   case riscv32:        return "riscv32";
   case riscv64:        return "riscv64";
-  case riscw:          return "riscw";
   case shave:          return "shave";
   case sparc:          return "sparc";
   case sparcel:        return "sparcel";
@@ -119,6 +119,8 @@ StringRef Triple::getArchTypePrefix(ArchType Kind) {
   case mips64:
   case mips64el:    return "mips";
 
+  case fox32:        return "fox32";
+
   case hexagon:     return "hexagon";
 
   case amdgcn:      return "amdgcn";
@@ -165,8 +167,6 @@ StringRef Triple::getArchTypePrefix(ArchType Kind) {
 
   case riscv32:
   case riscv64:     return "riscv";
-
-  case riscw:        return "riscw";
 
   case ve:          return "ve";
   case csky:        return "csky";
@@ -336,7 +336,7 @@ Triple::ArchType Triple::getArchTypeForLLVMName(StringRef Name) {
     .Case("amdgcn", amdgcn)
     .Case("riscv32", riscv32)
     .Case("riscv64", riscv64)
-    .Case("riscw", riscw)
+    .Case("fox32", fox32)
     .Case("hexagon", hexagon)
     .Case("sparc", sparc)
     .Case("sparcel", sparcel)
@@ -481,7 +481,7 @@ static Triple::ArchType parseArch(StringRef ArchName) {
     .Case("amdgcn", Triple::amdgcn)
     .Case("riscv32", Triple::riscv32)
     .Case("riscv64", Triple::riscv64)
-    .Case("riscw", Triple::riscw)
+    .Case("fox32", Triple::fox32)
     .Case("hexagon", Triple::hexagon)
     .Cases("s390x", "systemz", Triple::systemz)
     .Case("sparc", Triple::sparc)
@@ -805,6 +805,7 @@ static Triple::ObjectFormatType getDefaultFormat(const Triple &T) {
   case Triple::bpfeb:
   case Triple::bpfel:
   case Triple::csky:
+  case Triple::fox32:
   case Triple::hexagon:
   case Triple::hsail64:
   case Triple::hsail:
@@ -829,7 +830,6 @@ static Triple::ObjectFormatType getDefaultFormat(const Triple &T) {
   case Triple::renderscript64:
   case Triple::riscv32:
   case Triple::riscv64:
-  case Triple::riscw:
   case Triple::shave:
   case Triple::sparc:
   case Triple::sparcel:
@@ -1390,6 +1390,7 @@ static unsigned getArchPointerBitWidth(llvm::Triple::ArchType Arch) {
   case llvm::Triple::armeb:
   case llvm::Triple::csky:
   case llvm::Triple::dxil:
+  case llvm::Triple::fox32:
   case llvm::Triple::hexagon:
   case llvm::Triple::hsail:
   case llvm::Triple::kalimba:
@@ -1405,7 +1406,6 @@ static unsigned getArchPointerBitWidth(llvm::Triple::ArchType Arch) {
   case llvm::Triple::r600:
   case llvm::Triple::renderscript32:
   case llvm::Triple::riscv32:
-  case llvm::Triple::riscw:
   case llvm::Triple::shave:
   case llvm::Triple::sparc:
   case llvm::Triple::sparcel:
@@ -1481,6 +1481,7 @@ Triple Triple::get32BitArchVariant() const {
   case Triple::armeb:
   case Triple::csky:
   case Triple::dxil:
+  case Triple::fox32:
   case Triple::hexagon:
   case Triple::hsail:
   case Triple::kalimba:
@@ -1496,7 +1497,6 @@ Triple Triple::get32BitArchVariant() const {
   case Triple::r600:
   case Triple::renderscript32:
   case Triple::riscv32:
-  case Triple::riscw:
   case Triple::shave:
   case Triple::sparc:
   case Triple::sparcel:
@@ -1548,13 +1548,13 @@ Triple Triple::get64BitArchVariant() const {
   case Triple::avr:
   case Triple::csky:
   case Triple::dxil:
+  case Triple::fox32:
   case Triple::hexagon:
   case Triple::kalimba:
   case Triple::lanai:
   case Triple::m68k:
   case Triple::msp430:
   case Triple::r600:
-  case Triple::riscw:
   case Triple::shave:
   case Triple::sparcel:
   case Triple::tce:

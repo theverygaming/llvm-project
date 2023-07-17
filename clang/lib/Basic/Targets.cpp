@@ -21,6 +21,7 @@
 #include "Targets/BPF.h"
 #include "Targets/CSKY.h"
 #include "Targets/DirectX.h"
+#include "Targets/Fox32.h"
 #include "Targets/Hexagon.h"
 #include "Targets/Lanai.h"
 #include "Targets/Le64.h"
@@ -32,7 +33,6 @@
 #include "Targets/PNaCl.h"
 #include "Targets/PPC.h"
 #include "Targets/RISCV.h"
-#include "Targets/RISCW.h"
 #include "Targets/SPIR.h"
 #include "Targets/Sparc.h"
 #include "Targets/SystemZ.h"
@@ -242,6 +242,9 @@ TargetInfo *AllocateTarget(const llvm::Triple &Triple,
   case llvm::Triple::bpfel:
     return new BPFTargetInfo(Triple, Opts);
 
+  case llvm::Triple::fox32:
+    return new Fox32TargetInfo(Triple, Opts);
+
   case llvm::Triple::msp430:
     return new MSP430TargetInfo(Triple, Opts);
 
@@ -426,9 +429,6 @@ TargetInfo *AllocateTarget(const llvm::Triple &Triple,
     default:
       return new RISCV64TargetInfo(Triple, Opts);
     }
-
-  case llvm::Triple::riscw:
-    return new RISCWTargetInfo(Triple, Opts);
 
   case llvm::Triple::sparc:
     switch (os) {

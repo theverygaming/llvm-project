@@ -52,6 +52,7 @@ add_clang_library(clangDriver
   ToolChains/Darwin.cpp
   ToolChains/DragonFly.cpp
   ToolChains/Flang.cpp
+  ToolChains/Fox32.cpp
   ToolChains/FreeBSD.cpp
   ToolChains/Fuchsia.cpp
   ToolChains/Gnu.cpp
@@ -74,7 +75,6 @@ add_clang_library(clangDriver
   ToolChains/OpenBSD.cpp
   ToolChains/PS4CPU.cpp
   ToolChains/RISCVToolchain.cpp
-  ToolChains/RISCW.cpp
   ToolChains/Solaris.cpp
   ToolChains/SPIRV.cpp
   ToolChains/TCE.cpp

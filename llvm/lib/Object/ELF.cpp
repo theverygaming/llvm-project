@@ -80,6 +80,13 @@ StringRef llvm::object::getELFRelocationTypeName(uint32_t Machine,
       break;
     }
     break;
+  case ELF::EM_FOX32:
+    switch (Type) {
+#include "llvm/BinaryFormat/ELFRelocs/Fox32.def"
+    default:
+      break;
+    }
+    break;
   case ELF::EM_HEXAGON:
     switch (Type) {
 #include "llvm/BinaryFormat/ELFRelocs/Hexagon.def"
@@ -111,13 +118,6 @@ StringRef llvm::object::getELFRelocationTypeName(uint32_t Machine,
   case ELF::EM_RISCV:
     switch (Type) {
 #include "llvm/BinaryFormat/ELFRelocs/RISCV.def"
-    default:
-      break;
-    }
-    break;
-  case ELF::EM_RISCW:
-    switch (Type) {
-#include "llvm/BinaryFormat/ELFRelocs/RISCW.def"
     default:
       break;
     }
