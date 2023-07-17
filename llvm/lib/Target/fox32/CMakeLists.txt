@@ -7,6 +7,7 @@ tablegen(LLVM fox32GenInstrInfo.inc -gen-instr-info)
 tablegen(LLVM fox32GenSubtargetInfo.inc -gen-subtarget)
 tablegen(LLVM fox32GenAsmWriter.inc -gen-asm-writer)
 tablegen(LLVM fox32GenDAGISel.inc -gen-dag-isel)
+tablegen(LLVM fox32GenCallingConv.inc -gen-callingconv)
 
 add_public_tablegen_target(fox32CommonTableGen)
 
@@ -19,6 +20,7 @@ add_llvm_target(fox32CodeGen
   fox32RegisterInfo.cpp
   fox32FrameLowering.cpp
   fox32InstrInfo.cpp
+  fox32CallingConv.cpp
 
   LINK_COMPONENTS
   Analysis

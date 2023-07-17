@@ -95,3 +95,13 @@ class ALU_rr<bits<7> funct7, bits<3> funct3, string opcodestr>
 
 def ADD  : ALU_rr<0b0000000, 0b000, "add">,
            Sched<[WriteIALU, ReadIALU, ReadIALU]>;
+
+let isReturn = 1, isBarrier = 1, isTerminator = 1 in
+def RET : RWInstR<0b0000001, 0b000, OPC_OP, (outs),
+              (ins), "ret", "">,
+          Sched<[WriteIALU, ReadIALU, ReadIALU]>;
+
+let hasSideEffects = 0, mayLoad = 1, mayStore = 1 in
+def MOV : RWInstR<0b0000010, 0b000, OPC_OP, (outs GPR:$rd),
+              (ins GPR:$rs1), "mov", "$rd, $rs1">,
+          Sched<[WriteIALU, ReadIALU, ReadIALU]>;
