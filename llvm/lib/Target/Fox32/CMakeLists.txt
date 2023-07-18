@@ -11,11 +11,11 @@ tablegen(LLVM Fox32GenDAGISel.inc -gen-dag-isel)
 tablegen(LLVM Fox32GenCallingConv.inc -gen-callingconv)
 tablegen(LLVM Fox32GenSubtargetInfo.inc -gen-subtarget)
 tablegen(LLVM Fox32GenMCPseudoLowering.inc -gen-pseudo-lowering)
+tablegen(LLVM Fox32GenDisassemblerTable.inc -gen-disassembler)
 
 # Fox32CommonTableGen must be defined
 add_public_tablegen_target(Fox32CommonTableGen)
 
-# Fox32CodeGen should match with LLVMBuild.txt Fox32CodeGen
 add_llvm_target(Fox32CodeGen
   Fox32AsmPrinter.cpp
   Fox32FrameLowering.cpp
@@ -36,6 +36,7 @@ add_llvm_target(Fox32CodeGen
   Fox32
 )
 
-# Should match with "subdirectories =  MCTargetDesc TargetInfo" in LLVMBuild.txt
 add_subdirectory(TargetInfo)
 add_subdirectory(MCTargetDesc)
+# TODO: fix disassembler
+#add_subdirectory(Disassembler)

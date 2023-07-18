@@ -66,7 +66,7 @@ static MCAsmInfo *createFox32MCAsmInfo(const MCRegisterInfo &MRI,
                                        const MCTargetOptions &Options) {
   MCAsmInfo *MAI = new Fox32MCAsmInfo(TT);
 
-  unsigned WP = MRI.getDwarfRegNum(Fox32::X2, true);
+  unsigned WP = MRI.getDwarfRegNum(Fox32::R2, true);
   MCCFIInstruction Inst = MCCFIInstruction::createDefCfaRegister(nullptr, WP);
   MAI->addInitialFrameState(Inst);
 

@@ -1,4 +1,5 @@
-//===-- Fox32InstrInfo.h - Fox32 Instruction Information ----------*- C++ -*-===//
+//===-- Fox32InstrInfo.h - Fox32 Instruction Information ----------*- C++
+//-*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -30,7 +31,19 @@ public:
 
 protected:
   const Fox32Subtarget &Subtarget;
+
+public:
+  void storeRegToStackSlot(MachineBasicBlock &MBB,
+                           MachineBasicBlock::iterator MI, Register SrcReg,
+                           bool IsKill, int FrameIndex,
+                           const TargetRegisterClass *RC,
+                           const TargetRegisterInfo *TRI) const override;
+
+  void loadRegFromStackSlot(MachineBasicBlock &MBB,
+                            MachineBasicBlock::iterator MI, Register DestReg,
+                            int FrameIndex, const TargetRegisterClass *RC,
+                            const TargetRegisterInfo *TRI) const override;
 };
-}
+} // namespace llvm
 
 #endif // end LLVM_LIB_TARGET_FOX32_FOX32INSTRINFO_H

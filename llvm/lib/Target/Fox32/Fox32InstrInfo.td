@@ -140,21 +140,21 @@ include "Fox32InstrFormats.td"
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
 class ALU_ri<bits<3> funct3, string opcodestr>
-    : RWInstI<funct3, OPC_OP_IMM, (outs GPR:$rd), (ins GPR:$rs1, simm12:$imm12),
-              opcodestr, "$rd, $rs1, $imm12">,
+    : RWInstI<funct3, OPC_OP_IMM, (outs GPR:$rd), (ins GPR:$rs0, simm12:$imm12),
+              opcodestr, "$rd, $rs0, $imm12">,
       Sched<[WriteIALU, ReadIALU]>;
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
 class Shift_ri<bit arithshift, bits<3> funct3, string opcodestr>
     : RWInstIShift<arithshift, funct3, OPC_OP_IMM, (outs GPR:$rd),
-                   (ins GPR:$rs1, uimmlog2wsize:$shamt), opcodestr,
-                   "$rd, $rs1, $shamt">,
+                   (ins GPR:$rs0, uimmlog2wsize:$shamt), opcodestr,
+                   "$rd, $rs0, $shamt">,
       Sched<[WriteShift, ReadShift]>;
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
 class ALU_rr<bits<7> funct7, bits<3> funct3, string opcodestr>
-    : RWInstR<funct7, funct3, OPC_OP, (outs GPR:$rd), (ins GPR:$rs1, GPR:$rs2),
-              opcodestr, "$rd, $rs1, $rs2">;
+    : RWInstR<funct7, funct3, OPC_OP, (outs GPR:$rd), (ins GPR:$rs0, GPR:$rs2),
+              opcodestr, "$rd, $rs0, $rs2">;
 
 //===----------------------------------------------------------------------===//
 // Instructions
@@ -217,8 +217,8 @@ def REMU    : ALU_rr<0b0000001, 0b111, "remu">,
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 let isCall = 1 in
 def JALR : RWInstI<0b000, OPC_JALR, (outs GPR:$rd),
-                   (ins GPR:$rs1, i32imm:$imm12),
-                   "jalr", "$rd, ${imm12}(${rs1})">,
+                   (ins GPR:$rs0, i32imm:$imm12),
+                   "jalr", "$rd, ${imm12}(${rs0})">,
            Sched<[WriteJalr, ReadJalr]>;
 }
 
@@ -228,16 +228,16 @@ def JALR : RWInstI<0b000, OPC_JALR, (outs GPR:$rd),
 
 let isReturn = 1, isBarrier = 1, isTerminator = 1 in
 def PseudoRET : Pseudo<(outs), (ins), [(fox32_ret)]>,
-                PseudoInstExpansion<(JALR X0, X1, 0)>;
+                PseudoInstExpansion<(JALR R0, R1, 0)>;
 
 def : InstAlias<"mv $rd, $rs",   (ADDI GPR:$rd, GPR:$rs,       0)>;
 def : InstAlias<"not $rd, $rs",  (XORI GPR:$rd, GPR:$rs,      -1)>;
-def : InstAlias<"neg $rd, $rs",  (SUB  GPR:$rd,      X0, GPR:$rs)>;
+def : InstAlias<"neg $rd, $rs",  (SUB  GPR:$rd,      R0, GPR:$rs)>;
 
 def : InstAlias<"seqz $rd, $rs", (SLTIU GPR:$rd, GPR:$rs,       1)>;
-def : InstAlias<"snez $rd, $rs", (SLTU  GPR:$rd,      X0, GPR:$rs)>;
-def : InstAlias<"sltz $rd, $rs", (SLT   GPR:$rd, GPR:$rs,      X0)>;
-def : InstAlias<"sgtz $rd, $rs", (SLT   GPR:$rd,      X0, GPR:$rs)>;
+def : InstAlias<"snez $rd, $rs", (SLTU  GPR:$rd,      R0, GPR:$rs)>;
+def : InstAlias<"sltz $rd, $rs", (SLT   GPR:$rd, GPR:$rs,      R0)>;
+def : InstAlias<"sgtz $rd, $rs", (SLT   GPR:$rd,      R0, GPR:$rs)>;
 
 // sgt/sgtu are recognised by the GNU assembler but the canonical slt/sltu
 // form will always be printed. Therefore, set a zero weight.
@@ -245,13 +245,13 @@ def : InstAlias<"sgt $rd, $rs, $rt", (SLT GPR:$rd, GPR:$rt, GPR:$rs), 0>;
 def : InstAlias<"sgtu $rd, $rs, $rt", (SLTU GPR:$rd, GPR:$rt, GPR:$rs), 0>;
 
 let EmitPriority = 0 in {
-def : InstAlias<"slt $rd, $rs1, $imm12",
-                (SLTI  GPR:$rd, GPR:$rs1, simm12:$imm12)>;
-def : InstAlias<"sltu $rd, $rs1, $imm12",
-                (SLTIU  GPR:$rd, GPR:$rs1, simm12:$imm12)>;
+def : InstAlias<"slt $rd, $rs0, $imm12",
+                (SLTI  GPR:$rd, GPR:$rs0, simm12:$imm12)>;
+def : InstAlias<"sltu $rd, $rs0, $imm12",
+                (SLTIU  GPR:$rd, GPR:$rs0, simm12:$imm12)>;
 }
 
-def : InstAlias<"ret",                   (JALR      X0,      X1, 0), 4>;
+def : InstAlias<"ret",                   (JALR      R0,      R1, 0), 4>;
 
 def : MnemonicAlias<"move", "mv">;
 
@@ -266,16 +266,16 @@ def : MnemonicAlias<"move", "mv">;
 /// Generic pattern classes
 
 class PatGprGpr<SDPatternOperator OpNode, RWInst Inst>
-    : Pat<(OpNode GPR:$rs1, GPR:$rs2), (Inst GPR:$rs1, GPR:$rs2)>;
+    : Pat<(OpNode GPR:$rs0, GPR:$rs2), (Inst GPR:$rs0, GPR:$rs2)>;
 class PatGprSimm12<SDPatternOperator OpNode, RWInstI Inst>
-    : Pat<(OpNode GPR:$rs1, simm12:$imm12), (Inst GPR:$rs1, simm12:$imm12)>;
+    : Pat<(OpNode GPR:$rs0, simm12:$imm12), (Inst GPR:$rs0, simm12:$imm12)>;
 class PatGprUimmLog2WSize<SDPatternOperator OpNode, RWInstIShift Inst>
-    : Pat<(OpNode GPR:$rs1, uimmlog2wsize:$shamt),
-          (Inst GPR:$rs1, uimmlog2wsize:$shamt)>;
+    : Pat<(OpNode GPR:$rs0, uimmlog2wsize:$shamt),
+          (Inst GPR:$rs0, uimmlog2wsize:$shamt)>;
 
 /// Immediates
 
-def : Pat<(simm12:$imm), (ADDI X0, simm12:$imm)>;
+def : Pat<(simm12:$imm), (ADDI R0, simm12:$imm)>;
 def : Pat<(simm32hi20:$imm), (LUI (HI20 imm:$imm))>;
 def : Pat<(simm32:$imm), (ADDI (LUI (HI20 imm:$imm)), (LO12Sext imm:$imm))>;
 
@@ -316,10 +316,10 @@ def : PatGprGpr<shiftop<shl>, SLL>;
 def : PatGprGpr<shiftop<srl>, SRL>;
 def : PatGprGpr<shiftop<sra>, SRA>;
 
-let Defs = [X2], Uses = [X2] in {
+let Defs = [R2], Uses = [R2] in {
 def ADJCALLSTACKDOWN : Pseudo<(outs), (ins i32imm:$amt1, i32imm:$amt2),
                               [(callseq_start timm:$amt1, timm:$amt2)]>;
 def ADJCALLSTACKUP   : Pseudo<(outs), (ins i32imm:$amt1, i32imm:$amt2),
                               [(callseq_end timm:$amt1, timm:$amt2)]>;
-} // end Defs = [X2], Uses = [X2]
+} // end Defs = [R2], Uses = [R2]
 

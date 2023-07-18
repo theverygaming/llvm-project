@@ -23,7 +23,7 @@
 using namespace llvm;
 
 Fox32RegisterInfo::Fox32RegisterInfo(const Fox32Subtarget &ST)
-  : Fox32GenRegisterInfo(Fox32::X1, /*DwarfFlavour*/0, /*EHFlavor*/0,
+  : Fox32GenRegisterInfo(Fox32::R1, /*DwarfFlavour*/0, /*EHFlavor*/0,
                          /*PC*/0), Subtarget(ST) {}
 
 const MCPhysReg *
@@ -44,10 +44,9 @@ Fox32RegisterInfo::getCallPreservedMask(const MachineFunction &MF,
 BitVector Fox32RegisterInfo::getReservedRegs(const MachineFunction &MF) const {
   BitVector Reserved(getNumRegs());
 
-  markSuperRegs(Reserved, Fox32::X0); // zero
-  markSuperRegs(Reserved, Fox32::X2); // sp
-  markSuperRegs(Reserved, Fox32::X3); // gp
-  markSuperRegs(Reserved, Fox32::X4); // tp
+  markSuperRegs(Reserved, Fox32::RSP); 
+  markSuperRegs(Reserved, Fox32::RESP); 
+  markSuperRegs(Reserved, Fox32::RFP);
 
   return Reserved;
 }

@@ -47,7 +47,7 @@ Fox32TargetLowering::Fox32TargetLowering(const TargetMachine &TM,
   // Set scheduling preference
   setSchedulingPreference(Sched::RegPressure);
 
-  setStackPointerRegisterToSaveRestore(Fox32::X2);
+  setStackPointerRegisterToSaveRestore(Fox32::RSP);
 
   // Use i32 for setcc operations results (slt, sgt, ...).
   setBooleanContents(ZeroOrOneBooleanContent);
@@ -102,9 +102,9 @@ void Fox32TargetLowering::ReplaceNodeResults(SDNode *N,
 //@            Formal Arguments Calling Convention Implementation
 //===----------------------------------------------------------------------===//
 
-// The BeyondRISC calling convention parameter registers.
+// Calling convention parameter registers.
 static const MCPhysReg GPRArgRegs[] = {
-  Fox32::X0, Fox32::X1, Fox32::X2, Fox32::X3
+  Fox32::R0, Fox32::R1, Fox32::R2, Fox32::R3, Fox32::R4, Fox32::R5, Fox32::R7, Fox32::R7
 };
 
 /// LowerFormalArguments - transform physical registers into virtual registers
@@ -138,7 +138,7 @@ SDValue Fox32TargetLowering::LowerFormalArguments(
   // We need to know this before we allocate the first byval or variadic
   // argument, as they will be allocated a stack slot below the CFA (Canonical
   // Frame Address, the stack pointer at entry to the function).
-  unsigned ArgRegBegin = Fox32::X4;
+  unsigned ArgRegBegin = Fox32::R4;
   for (unsigned i = 0, e = ArgLocs.size(); i != e; ++i) {
     if (CCInfo.getInRegsParamsProcessed() >= CCInfo.getInRegsParamsCount())
       break;

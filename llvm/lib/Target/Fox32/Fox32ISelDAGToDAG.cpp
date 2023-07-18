@@ -39,16 +39,6 @@ void Fox32DAGToDAGISel::Select(SDNode *Node) {
   SDLoc DL(Node);
 
   switch(Opcode) {
-  case ISD::Constant: {
-    auto ConstNode = cast<ConstantSDNode>(Node);
-    if (ConstNode->isNullValue()) {
-      SDValue New = CurDAG->getCopyFromReg(CurDAG->getEntryNode(), SDLoc(Node),
-                                           Fox32::X0, MVT::i32);
-      ReplaceNode(Node, New.getNode());
-      return;
-    }
-    break;
-  }
   default: break;
   }
 
