@@ -24,22 +24,8 @@ namespace Fox32II {
 enum {
   InstFormatPseudo = 0,
   InstFormatR = 1,
-  InstFormatR4 = 2,
   InstFormatI = 3,
-  InstFormatS = 4,
-  InstFormatB = 5,
   InstFormatU = 6,
-  InstFormatJ = 7,
-  InstFormatCR = 8,
-  InstFormatCI = 9,
-  InstFormatCSS = 10,
-  InstFormatCIW = 11,
-  InstFormatCL = 12,
-  InstFormatCS = 13,
-  InstFormatCA = 14,
-  InstFormatCB = 15,
-  InstFormatCJ = 16,
-  InstFormatOther = 17,
 
   InstFormatMask = 31
 };
@@ -55,6 +41,7 @@ enum OperandType : unsigned {
   OPERAND_SIMM12,
   OPERAND_SIMM13_LSB0,
   OPERAND_UIMM20,
+  OPERAND_UIMM32,
   OPERAND_SIMM21_LSB0,
   OPERAND_UIMMLOG2WSIZE,
   OPERAND_LAST_FOX32_IMM = OPERAND_UIMMLOG2WSIZE

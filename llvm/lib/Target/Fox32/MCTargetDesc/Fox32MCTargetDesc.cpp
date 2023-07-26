@@ -16,8 +16,8 @@
 #include "Fox32MCAsmInfo.h"
 #include "TargetInfo/Fox32TargetInfo.h"
 #include "llvm/MC/MCELFStreamer.h"
-#include "llvm/MC/MCInstrAnalysis.h"
 #include "llvm/MC/MCInstPrinter.h"
+#include "llvm/MC/MCInstrAnalysis.h"
 #include "llvm/MC/MCInstrInfo.h"
 #include "llvm/MC/MCRegisterInfo.h"
 #include "llvm/MC/MCSubtargetInfo.h"
@@ -87,7 +87,13 @@ extern "C" void LLVMInitializeFox32TargetMC() {
     // Register the MC subtarget info.
     TargetRegistry::RegisterMCSubtargetInfo(*T, createFox32MCSubtargetInfo);
 
+    // Register the code emitter.
+    TargetRegistry::RegisterMCCodeEmitter(*T, createFox32MCCodeEmitter);
+
     // Register the MCInstPrinter.
     TargetRegistry::RegisterMCInstPrinter(*T, createFox32MCInstPrinter);
+
+    // Register the asm backend.
+    TargetRegistry::RegisterMCAsmBackend(*T, createFox32AsmBackend);
   }
 }

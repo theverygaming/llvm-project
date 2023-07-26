@@ -98,6 +98,20 @@ class UImm20Operand : Operand<i32> {
   let OperandNamespace = "Fox32Op";
 }
 
+def uimm32 : Operand<i32>, ImmLeaf<i32, [{return isInt<32>(Imm);}]> {
+  let ParserMatchClass = SImmAsmOperand<32>;
+  let EncoderMethod = "getImmOpValue";
+  let DecoderMethod = "decodeUImmOperand<32>";
+  let MCOperandPredicate = [{
+    int64_t Imm;
+    if (MCOp.evaluateAsConstantImm(Imm))
+      return isUInt<32>(Imm);
+    return MCOp.isBareSymbolRef();
+  }];
+  let OperandType = "OPERAND_UIMM32";
+  let OperandNamespace = "Fox32Op";
+}
+
 def uimm20_lui : UImm20Operand {
   let ParserMatchClass = UImmAsmOperand<20, "LUI">;
 }
@@ -138,6 +152,10 @@ include "Fox32InstrFormats.td"
 // Instruction Class Templates
 //===----------------------------------------------------------------------===//
 
+// this is required to force tablegen to generate different code until we actually have instructions with these sizes
+def F32MIDINST : Fox32Inst_srcimm8<(outs), (ins), [], "lollmao", "", OPC_JMP, CondAlways, 0xFF>, Sched<[]>;
+def F32BIGINST : Fox32Inst_srcimmptr32dstimmptr32<(outs uimm32:$dst), (ins uimm32:$src), [], "mov.32", "[$dst], [$src]", OPC_MOV, CondAlways>, Sched<[]>;
+
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
 class ALU_ri<bits<3> funct3, string opcodestr>
     : RWInstI<funct3, OPC_OP_IMM, (outs GPR:$rd), (ins GPR:$rs0, simm12:$imm12),
@@ -159,6 +177,11 @@ class ALU_rr<bits<7> funct7, bits<3> funct3, string opcodestr>
 //===----------------------------------------------------------------------===//
 // Instructions
 //===----------------------------------------------------------------------===//
+
+// fox32 instructions
+
+let isReturn = 1, isBarrier = 1, isTerminator = 1 in
+def F32RET : Fox32Inst_None<(outs), (ins), [(fox32_ret)], "ret", "", OPC_RET, CondAlways, OpSizeWord>, Sched<[]>;
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 let isReMaterializable = 1, isAsCheapAsAMove = 1 in
@@ -226,10 +249,6 @@ def JALR : RWInstI<0b000, OPC_JALR, (outs GPR:$rd),
 // Assembler Pseudo Instructions (User-Level ISA, Version 2.2, Chapter 20)
 //===----------------------------------------------------------------------===//
 
-let isReturn = 1, isBarrier = 1, isTerminator = 1 in
-def PseudoRET : Pseudo<(outs), (ins), [(fox32_ret)]>,
-                PseudoInstExpansion<(JALR R0, R1, 0)>;
-
 def : InstAlias<"mv $rd, $rs",   (ADDI GPR:$rd, GPR:$rs,       0)>;
 def : InstAlias<"not $rd, $rs",  (XORI GPR:$rd, GPR:$rs,      -1)>;
 def : InstAlias<"neg $rd, $rs",  (SUB  GPR:$rd,      R0, GPR:$rs)>;
@@ -250,8 +269,6 @@ def : InstAlias<"slt $rd, $rs0, $imm12",
 def : InstAlias<"sltu $rd, $rs0, $imm12",
                 (SLTIU  GPR:$rd, GPR:$rs0, simm12:$imm12)>;
 }
-
-def : InstAlias<"ret",                   (JALR      R0,      R1, 0), 4>;
 
 def : MnemonicAlias<"move", "mv">;
 

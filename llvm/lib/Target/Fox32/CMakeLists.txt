@@ -39,4 +39,4 @@ add_llvm_target(Fox32CodeGen
 add_subdirectory(TargetInfo)
 add_subdirectory(MCTargetDesc)
 # TODO: fix disassembler
-#add_subdirectory(Disassembler)
+add_subdirectory(Disassembler)
