@@ -320,7 +320,7 @@ enum {
   EM_VE = 251,            // NEC SX-Aurora VE
   EM_CSKY = 252,          // C-SKY 32-bit processor
   EM_LOONGARCH = 258,     // LoongArch
-  EM_FOX32 = 999          // fox32
+  EM_FUNNYARCH = 999          // funnyarch
 };
 
 // Object file classes.
@@ -649,9 +649,9 @@ enum {
   SHN_HEXAGON_SCOMMON_8 = 0xff04  // Double-word-size access
 };
 
-// ELF Relocation types for fox32
+// ELF Relocation types for funnyarch
 enum {
-#include "ELFRelocs/Fox32.def"
+#include "ELFRelocs/Funnyarch.def"
 };
 
 // ELF Relocation types for Hexagon

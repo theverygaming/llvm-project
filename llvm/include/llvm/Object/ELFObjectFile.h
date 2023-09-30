@@ -1192,8 +1192,8 @@ StringRef ELFObjectFile<ELFT>::getFileFormatName() const {
       return (IsLittleEndian ? "elf32-littlearm" : "elf32-bigarm");
     case ELF::EM_AVR:
       return "elf32-avr";
-    case ELF::EM_FOX32:
-      return "ELF32-fox32";
+    case ELF::EM_FUNNYARCH:
+      return "ELF32-funnyarch";
     case ELF::EM_HEXAGON:
       return "elf32-hexagon";
     case ELF::EM_LANAI:
@@ -1269,10 +1269,10 @@ template <class ELFT> Triple::ArchType ELFObjectFile<ELFT>::getArch() const {
     return Triple::arm;
   case ELF::EM_AVR:
     return Triple::avr;
-  case ELF::EM_FOX32:
+  case ELF::EM_FUNNYARCH:
     switch (EF.getHeader().e_ident[ELF::EI_CLASS]) {
     case ELF::ELFCLASS32:
-      return Triple::fox32;
+      return Triple::funnyarch;
     default:
       report_fatal_error("Invalid ELFCLASS!");
     }

@@ -52,9 +52,9 @@ add_clang_library(clangDriver
   ToolChains/Darwin.cpp
   ToolChains/DragonFly.cpp
   ToolChains/Flang.cpp
-  ToolChains/Fox32.cpp
   ToolChains/FreeBSD.cpp
   ToolChains/Fuchsia.cpp
+  ToolChains/Funnyarch.cpp
   ToolChains/Gnu.cpp
   ToolChains/Haiku.cpp
   ToolChains/HIPUtility.cpp

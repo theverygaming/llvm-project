@@ -21,7 +21,7 @@
 #include "Targets/BPF.h"
 #include "Targets/CSKY.h"
 #include "Targets/DirectX.h"
-#include "Targets/Fox32.h"
+#include "Targets/Funnyarch.h"
 #include "Targets/Hexagon.h"
 #include "Targets/Lanai.h"
 #include "Targets/Le64.h"
@@ -242,8 +242,8 @@ TargetInfo *AllocateTarget(const llvm::Triple &Triple,
   case llvm::Triple::bpfel:
     return new BPFTargetInfo(Triple, Opts);
 
-  case llvm::Triple::fox32:
-    return new Fox32TargetInfo(Triple, Opts);
+  case llvm::Triple::funnyarch:
+    return new FunnyarchTargetInfo(Triple, Opts);
 
   case llvm::Triple::msp430:
     return new MSP430TargetInfo(Triple, Opts);

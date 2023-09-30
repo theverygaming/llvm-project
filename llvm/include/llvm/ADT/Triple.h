@@ -57,7 +57,7 @@ public:
     bpfeb,          // eBPF or extended BPF or 64-bit BPF (big endian)
     csky,           // CSKY: csky
     dxil,           // DXIL 32-bit DirectX bytecode
-    fox32,          // fox32
+    funnyarch,          // funnyarch
     hexagon,        // Hexagon: hexagon
     loongarch32,    // LoongArch (32-bit): loongarch32
     loongarch64,    // LoongArch (64-bit): loongarch64

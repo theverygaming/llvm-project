@@ -80,9 +80,9 @@ StringRef llvm::object::getELFRelocationTypeName(uint32_t Machine,
       break;
     }
     break;
-  case ELF::EM_FOX32:
+  case ELF::EM_FUNNYARCH:
     switch (Type) {
-#include "llvm/BinaryFormat/ELFRelocs/Fox32.def"
+#include "llvm/BinaryFormat/ELFRelocs/Funnyarch.def"
     default:
       break;
     }
