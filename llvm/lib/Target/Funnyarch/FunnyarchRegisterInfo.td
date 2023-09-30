@@ -12,8 +12,8 @@
 //===----------------------------------------------------------------------===//
 
 let Namespace = "Funnyarch" in {
-class FunnyarchReg<bits<8> Enc, string n, list<string> alt = []> : Register<n> {
-  let HWEncoding{7-0} = Enc;
+class FunnyarchReg<bits<5> Enc, string n, list<string> alt = []> : Register<n> {
+  let HWEncoding{4-0} = Enc;
   let AltNames = alt;
 }
 } // end Namespace

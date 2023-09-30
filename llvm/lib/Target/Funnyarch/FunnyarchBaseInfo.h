@@ -32,12 +32,7 @@ enum {
   InstFormatE6 = 6,
   InstFormatE7 = 7,
 
-  // FIXME: remove this
-  InstFormatR = 1,
-  InstFormatI = 3,
-  InstFormatU = 6,
-
-  InstFormatMask = 31
+  InstFormatMask = 0b111
 };
 
 } // namespace FunnyarchII

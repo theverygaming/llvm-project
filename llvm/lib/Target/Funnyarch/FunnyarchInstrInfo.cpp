@@ -1,4 +1,5 @@
-//===-- FunnyarchInstrInfo.cpp - Funnyarch Instruction Information ----------------===//
+//===-- FunnyarchInstrInfo.cpp - Funnyarch Instruction Information
+//----------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -30,14 +31,16 @@ using namespace llvm;
 #include "FunnyarchGenInstrInfo.inc"
 
 FunnyarchInstrInfo::FunnyarchInstrInfo(const FunnyarchSubtarget &STI)
-    : FunnyarchGenInstrInfo(Funnyarch::ADJCALLSTACKDOWN, Funnyarch::ADJCALLSTACKUP),
+    : FunnyarchGenInstrInfo(Funnyarch::ADJCALLSTACKDOWN,
+                            Funnyarch::ADJCALLSTACKUP),
       Subtarget(STI) {}
 
 static unsigned getLoadStoreRegOpcode(unsigned Reg,
                                       const TargetRegisterClass *RC,
                                       const TargetRegisterInfo *TRI,
-                                      const FunnyarchSubtarget &STI, bool load) {
-return Funnyarch::ADDI;
+                                      const FunnyarchSubtarget &STI,
+                                      bool load) {
+  return Funnyarch::FUMOV_E7; // FIXME: this is so wrong
   /*switch (TRI->getRegSizeInBits(*RC)) {
   default:
     llvm_unreachable("Unknown spill size");
@@ -57,12 +60,10 @@ return Funnyarch::ADDI;
   }*/
 }
 
-void FunnyarchInstrInfo::storeRegToStackSlot(MachineBasicBlock &MBB,
-                                         MachineBasicBlock::iterator MI,
-                                         Register SrcReg, bool IsKill,
-                                         int FrameIndex,
-                                         const TargetRegisterClass *RC,
-                                         const TargetRegisterInfo *TRI) const {
+void FunnyarchInstrInfo::storeRegToStackSlot(
+    MachineBasicBlock &MBB, MachineBasicBlock::iterator MI, Register SrcReg,
+    bool IsKill, int FrameIndex, const TargetRegisterClass *RC,
+    const TargetRegisterInfo *TRI) const {
   const MachineFunction &MF = *MBB.getParent();
   assert(MF.getFrameInfo().getObjectSize(FrameIndex) == 4 &&
          "Stack slot too small for store");
@@ -73,15 +74,15 @@ void FunnyarchInstrInfo::storeRegToStackSlot(MachineBasicBlock &MBB,
       .addReg(SrcReg, getKillRegState(IsKill));
 }
 
-void FunnyarchInstrInfo::loadRegFromStackSlot(MachineBasicBlock &MBB,
-                                          MachineBasicBlock::iterator MI,
-                                          Register DstReg, int FrameIndex,
-                                          const TargetRegisterClass *RC,
-                                          const TargetRegisterInfo *TRI) const {
+void FunnyarchInstrInfo::loadRegFromStackSlot(
+    MachineBasicBlock &MBB, MachineBasicBlock::iterator MI, Register DstReg,
+    int FrameIndex, const TargetRegisterClass *RC,
+    const TargetRegisterInfo *TRI) const {
   const MachineFunction &MF = *MBB.getParent();
   assert(MF.getFrameInfo().getObjectSize(FrameIndex) == 4 &&
          "Stack slot too small for store");
   unsigned Opc = getLoadStoreRegOpcode(DstReg, RC, TRI, Subtarget, true);
   DebugLoc DL = MBB.findDebugLoc(MI);
-  Funnyarch::addFrameReference(BuildMI(MBB, MI, DL, get(Opc), DstReg), FrameIndex);
+  Funnyarch::addFrameReference(BuildMI(MBB, MI, DL, get(Opc), DstReg),
+                               FrameIndex);
 }

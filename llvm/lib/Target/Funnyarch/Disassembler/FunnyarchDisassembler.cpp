@@ -45,7 +45,7 @@ static const unsigned RegisterDecoderTable[] = {
 static DecodeStatus DecodeGPRRegisterClass(MCInst &Inst, uint32_t RegNo,
                                            uint64_t Address,
                                            const MCDisassembler *Decoder) {
-  if (RegNo > 34) {
+  if (RegNo > 31) {
     return MCDisassembler::Fail;
   }
 
@@ -85,141 +85,6 @@ struct FunnyarchDisassembler : public MCDisassembler {
                               raw_ostream &CStream) const override;
 };
 
-static bool getFunnyarchInstrOpCount(uint8_t opcode, unsigned int *count) {
-  switch (opcode) {
-  case 0x00:
-    *count = 0;
-    return true;
-  case 0x01:
-  case 0x02:
-  case 0x03:
-  case 0x04:
-  case 0x05:
-  case 0x06:
-  case 0x07:
-    *count = 2;
-    return true;
-  case 0x08:
-  case 0x09:
-  case 0x0A:
-    *count = 1;
-    return true;
-  case 0x0B:
-    *count = 2;
-    return true;
-  case 0x0C:
-  case 0x0D:
-  case 0x10:
-    *count = 0;
-    return true;
-  case 0x11:
-    *count = 1;
-    return true;
-  case 0x13:
-  case 0x14:
-  case 0x15:
-  case 0x16:
-  case 0x17:
-    *count = 2;
-    return true;
-  case 0x18:
-  case 0x19:
-  case 0x1A:
-    *count = 1;
-    return true;
-  case 0x1B:
-    *count = 2;
-    return true;
-  case 0x1C:
-  case 0x1D:
-  case 0x20:
-    *count = 0;
-    return true;
-  case 0x21:
-  case 0x22:
-  case 0x23:
-  case 0x24:
-  case 0x25:
-  case 0x26:
-  case 0x27:
-    *count = 2;
-    return true;
-  case 0x28:
-  case 0x29:
-    *count = 1;
-    return true;
-  case 0x2A:
-    *count = 0;
-    return true;
-  case 0x2C:
-  case 0x2D:
-  case 0x31:
-    *count = 1;
-    return true;
-  case 0x32:
-    *count = 2;
-    return true;
-  case 0x33:
-    *count = 1;
-    return true;
-  case 0x34:
-  case 0x35:
-  case 0x39:
-    *count = 2;
-    return true;
-  case 0x3A:
-    *count = 0;
-    return true;
-  case 0x3D:
-    *count = 1;
-    return true;
-  default:
-    *count = 0;
-    return false;
-  }
-}
-
-static unsigned int getFunnyarchOpFieldSize(uint8_t type, uint8_t opSize) {
-  uint8_t opsizes[] = {1, 2, 3, 0};
-  switch (type) {
-  case 0: // register
-  case 1: // register pointer
-    return 1;
-  case 2: // immediate
-    return opsizes[opSize];
-  case 3: // immediate pointer
-    return 4;
-  }
-  return 0;
-}
-
-static bool getFunnyarchInstrSize(uint16_t control, unsigned int *size) {
-  uint8_t srcType = (control >> 0) & 0x3;
-  uint8_t dstType = (control >> 2) & 0x3;
-  uint8_t opcode = (control >> 8) & 0x3F;
-  uint8_t opSize = (control >> 14) & 0x3;
-
-  if (opSize > 2) { // reserved opsize
-    return false;
-  }
-
-  unsigned int opcount;
-  if (!getFunnyarchInstrOpCount(opcode, &opcount)) {
-    return false;
-  }
-
-  *size = 2; // control word
-
-  if (opcount >= 1) {
-    *size += getFunnyarchOpFieldSize(srcType, opSize);
-  }
-  if (opcount == 2) {
-    *size += getFunnyarchOpFieldSize(dstType, opSize);
-  }
-
-  return true;
-}
-
 DecodeStatus FunnyarchDisassembler::getInstruction(MCInst &Instr,
                                                    uint64_t &Size,
                                                    ArrayRef<uint8_t> Bytes,
@@ -227,8 +92,9 @@ DecodeStatus FunnyarchDisassembler::getInstruction(MCInst &Instr,
                                                    raw_ostream &CStream) const {
   DecodeStatus Result;
   std::vector<uint64_t> instarr;
-  instarr.push_back((uint64_t)Bytes.data()[0] |
-                    ((uint64_t)Bytes.data()[1] << 8));
+  instarr.push_back(
+      (uint64_t)Bytes.data()[0] | ((uint64_t)Bytes.data()[1] << 8) |
+      ((uint64_t)Bytes.data()[2] << 16) | ((uint64_t)Bytes.data()[3] << 24));
   APInt Insn(64, ArrayRef<uint64_t>(instarr));
   Size = 4;
 
