@@ -45,19 +45,16 @@ def R22 : FunnyarchReg<22,"r22", []>, DwarfRegNum<[22]>;
 def R23 : FunnyarchReg<23,"r23", []>, DwarfRegNum<[23]>;
 def R24 : FunnyarchReg<24,"r24", []>, DwarfRegNum<[24]>;
 def R25 : FunnyarchReg<25,"r25", []>, DwarfRegNum<[25]>;
-def R26 : FunnyarchReg<26,"r26", []>, DwarfRegNum<[26]>;
-def R27 : FunnyarchReg<27,"r27", []>, DwarfRegNum<[27]>;
-def R28 : FunnyarchReg<28,"r28", []>, DwarfRegNum<[28]>;
-def R29 : FunnyarchReg<29,"r29", []>, DwarfRegNum<[29]>;
-def R30 : FunnyarchReg<30,"r30", []>, DwarfRegNum<[30]>;
-def R31 : FunnyarchReg<31,"r31", []>, DwarfRegNum<[31]>; // used for loop and rloop instructions
 
 // special registers
-def RSP : FunnyarchReg<32,"rsp", ["sp"]>, DwarfRegNum<[32]>;
-def RESP : FunnyarchReg<33,"resp", []>, DwarfRegNum<[33]>;
-def RFP : FunnyarchReg<34,"rfp", ["fp"]>, DwarfRegNum<[34]>;
+def RFP : FunnyarchReg<26,"rfp", []>, DwarfRegNum<[26]>;
+def RIPTR : FunnyarchReg<27,"iptr", []>, DwarfRegNum<[27]>;
+def RLR : FunnyarchReg<28,"lr", []>, DwarfRegNum<[28]>;
+def RSP : FunnyarchReg<29,"rsp", []>, DwarfRegNum<[29]>;
+def RIP : FunnyarchReg<30,"rip", []>, DwarfRegNum<[30]>;
+def RF : FunnyarchReg<31,"rf", []>, DwarfRegNum<[31]>;
 
-// funnyarch calling convention:
+// funnyarch calling convention: // FIXME: calling convention needs updates
 // caller saves r0-r7
 // callee saves: r8-r31
 // args passed in: r0-r7 and then on stack
@@ -67,5 +64,6 @@ def RFP : FunnyarchReg<34,"rfp", ["fp"]>, DwarfRegNum<[34]>;
 // Registers are listed in the order caller-save, callee-save, specials.
 def GPR : RegisterClass<"Funnyarch", [i32], 32, (add
     (sequence "R%u", 0, 7),
-    (sequence "R%u", 8, 31)
+    (sequence "R%u", 8, 25),
+    RFP, RIPTR, RLR, RSP, RIP, RF
   )>;

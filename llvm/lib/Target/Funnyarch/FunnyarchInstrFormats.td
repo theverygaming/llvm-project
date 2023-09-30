@@ -25,184 +25,110 @@
 //
 //===----------------------------------------------------------------------===//
 
-class FunnyarchOpType<bits<2> val> {
-  bits<2> Value = val;
-}
-def OpTypeReg      : FunnyarchOpType<0>; // Register
-def OpTypeRegPtr   : FunnyarchOpType<1>; // Register pointer
-def OpTypeImm      : FunnyarchOpType<2>; // Immediate
-def OpTypeImmPtr   : FunnyarchOpType<3>; // Immediate pointer
-
-class FunnyarchOpSize<bits<2> val> {
-  bits<2> Value = val;
-}
-def OpSizeByte     : FunnyarchOpSize<0>; // 8  bits
-def OpSizeHalf     : FunnyarchOpSize<1>; // 16 bits
-def OpSizeWord     : FunnyarchOpSize<2>; // 32 bits
-
 class FunnyarchCond<bits<3> val> {
   bits<3> Value = val;
 }
 def CondAlways     : FunnyarchCond<0>; // Execute unconditionally
-def CondIfz        : FunnyarchCond<1>; // Execute if zero flag is set
-def CondIfnz       : FunnyarchCond<2>; // Execute if zero flag is not set
-def CondIfc        : FunnyarchCond<3>; // Execute if carry flag is set
-def CondIfnc       : FunnyarchCond<4>; // Execute if carry flag is not set
-def CondIfgt       : FunnyarchCond<5>; // Execute if neither zero flag nor carry flag is set
+def CondIfeq       : FunnyarchCond<1>; // Execute if zero flag is set
+def CondIfneq      : FunnyarchCond<2>; // Execute if zero flag is not set
+def CondIflt       : FunnyarchCond<3>; // Execute if carry flag is set
+def CondIfgteq     : FunnyarchCond<4>; // Execute if carry flag is not set
+def CondIfgt       : FunnyarchCond<5>; // Execute if both carry and zero flags are not set
 def CondIflteq     : FunnyarchCond<6>; // Execute if zero flag or carry flag is set
 
 class FunnyarchOpcodeX<bits<6> val> {
   bits<6> Value = val;
 }
 def OPC_NOP        : FunnyarchOpcodeX<0x00>;
-def OPC_ADD        : FunnyarchOpcodeX<0x01>;
-def OPC_MUL        : FunnyarchOpcodeX<0x02>;
-def OPC_AND        : FunnyarchOpcodeX<0x03>;
-def OPC_SLA        : FunnyarchOpcodeX<0x04>;
-def OPC_SRA        : FunnyarchOpcodeX<0x05>;
-def OPC_BSE        : FunnyarchOpcodeX<0x06>;
-def OPC_CMP        : FunnyarchOpcodeX<0x07>;
-def OPC_JMP        : FunnyarchOpcodeX<0x08>;
-def OPC_RJMP       : FunnyarchOpcodeX<0x09>;
-def OPC_PUSH       : FunnyarchOpcodeX<0x0A>;
-def OPC_IN         : FunnyarchOpcodeX<0x0B>;
-def OPC_ISE        : FunnyarchOpcodeX<0x0C>;
-def OPC_MSE        : FunnyarchOpcodeX<0x0D>;
-def OPC_HALT       : FunnyarchOpcodeX<0x10>;
-def OPC_INC        : FunnyarchOpcodeX<0x11>;
-def OPC_OR         : FunnyarchOpcodeX<0x13>;
-def OPC_IMUL       : FunnyarchOpcodeX<0x14>;
-def OPC_SRL        : FunnyarchOpcodeX<0x15>;
-def OPC_BCL        : FunnyarchOpcodeX<0x16>;
-def OPC_MOV        : FunnyarchOpcodeX<0x17>;
-def OPC_CALL       : FunnyarchOpcodeX<0x18>;
-def OPC_RCALL      : FunnyarchOpcodeX<0x19>;
-def OPC_POP        : FunnyarchOpcodeX<0x1A>;
-def OPC_OUT        : FunnyarchOpcodeX<0x1B>;
-def OPC_ICL        : FunnyarchOpcodeX<0x1C>;
-def OPC_MCL        : FunnyarchOpcodeX<0x1D>;
-def OPC_BRK        : FunnyarchOpcodeX<0x20>;
-def OPC_SUB        : FunnyarchOpcodeX<0x21>;
-def OPC_DIV        : FunnyarchOpcodeX<0x22>;
-def OPC_XOR        : FunnyarchOpcodeX<0x23>;
-def OPC_ROL        : FunnyarchOpcodeX<0x24>;
-def OPC_ROR        : FunnyarchOpcodeX<0x25>;
-def OPC_BTS        : FunnyarchOpcodeX<0x26>;
-def OPC_MOVZ       : FunnyarchOpcodeX<0x27>;
-def OPC_LOOP       : FunnyarchOpcodeX<0x28>;
-def OPC_RLOOP      : FunnyarchOpcodeX<0x29>;
-def OPC_RET        : FunnyarchOpcodeX<0x2A>;
-def OPC_INT        : FunnyarchOpcodeX<0x2C>;
-def OPC_TLB        : FunnyarchOpcodeX<0x2D>;
-def OPC_DEC        : FunnyarchOpcodeX<0x31>;
-def OPC_REM        : FunnyarchOpcodeX<0x32>;
-def OPC_NOT        : FunnyarchOpcodeX<0x33>;
-def OPC_IDIV       : FunnyarchOpcodeX<0x34>;
-def OPC_IREM       : FunnyarchOpcodeX<0x35>;
-def OPC_RTA        : FunnyarchOpcodeX<0x39>;
-def OPC_RETI       : FunnyarchOpcodeX<0x3A>;
-def OPC_FLP        : FunnyarchOpcodeX<0x3D>;
+def OPC_STRPI      : FunnyarchOpcodeX<0x01>;
+def OPC_JMP        : FunnyarchOpcodeX<0x02>;
+def OPC_RJMP       : FunnyarchOpcodeX<0x03>;
+def OPC_MOV_E7     : FunnyarchOpcodeX<0x04>;
+def OPC_MOV_E3     : FunnyarchOpcodeX<0x05>;
+def OPC_LDR        : FunnyarchOpcodeX<0x06>;
+def OPC_LDRI       : FunnyarchOpcodeX<0x07>;
+def OPC_STR        : FunnyarchOpcodeX<0x08>;
+def OPC_STRI       : FunnyarchOpcodeX<0x09>;
+def OPC_JAL        : FunnyarchOpcodeX<0x0A>;
+def OPC_RJAL       : FunnyarchOpcodeX<0x0B>;
+def OPC_CMP_E7     : FunnyarchOpcodeX<0x0C>;
+def OPC_CMP_E3     : FunnyarchOpcodeX<0x0D>;
+def OPC_INT        : FunnyarchOpcodeX<0x0E>;
+def OPC_ADD_E1     : FunnyarchOpcodeX<0x10>;
+def OPC_ADD_E2     : FunnyarchOpcodeX<0x11>;
+def OPC_ADD_E3     : FunnyarchOpcodeX<0x12>;
+def OPC_SUB_E1     : FunnyarchOpcodeX<0x13>;
+def OPC_SUB_E2     : FunnyarchOpcodeX<0x14>;
+def OPC_SUB_E3     : FunnyarchOpcodeX<0x15>;
+def OPC_SHL_E1     : FunnyarchOpcodeX<0x16>;
+def OPC_SHL_E2     : FunnyarchOpcodeX<0x17>;
+def OPC_SHR_E1     : FunnyarchOpcodeX<0x18>;
+def OPC_SHR_E2     : FunnyarchOpcodeX<0x19>;
+def OPC_SAR_E1     : FunnyarchOpcodeX<0x1A>;
+def OPC_SAR_E2     : FunnyarchOpcodeX<0x1B>;
+def OPC_AND_E1     : FunnyarchOpcodeX<0x1C>;
+def OPC_AND_E2     : FunnyarchOpcodeX<0x1D>;
+def OPC_AND_E3     : FunnyarchOpcodeX<0x1E>;
+def OPC_OR_E1      : FunnyarchOpcodeX<0x1F>;
+def OPC_OR_E2      : FunnyarchOpcodeX<0x20>;
+def OPC_OR_E3      : FunnyarchOpcodeX<0x21>;
+def OPC_XOR_E1     : FunnyarchOpcodeX<0x22>;
+def OPC_XOR_E2     : FunnyarchOpcodeX<0x23>;
+def OPC_XOR_E3     : FunnyarchOpcodeX<0x24>;
+def OPC_NOT        : FunnyarchOpcodeX<0x25>;
 
-class InstFormatX<bits<5> val> {
-  bits<5> Value = val;
+// Format specifies the encoding used by the instruction. This is used by
+// FunnyarchMCCodeEmitter to determine which form of fixup to use. These
+// definitions must be kept in-sync with FunnyarchBaseInfo.h.
+class InstFormatX<bits<3> val> {
+  bits<3> Value = val;
 }
-def InstFormatPseudoX : InstFormatX<0>;
+def InstFormatPseudo  : InstFormatX<0>;
+def InstFormatE1      : InstFormatX<1>;
+def InstFormatE2      : InstFormatX<2>;
+def InstFormatE3      : InstFormatX<3>;
+def InstFormatE4      : InstFormatX<4>;
+def InstFormatE5      : InstFormatX<5>;
+def InstFormatE6      : InstFormatX<6>;
+def InstFormatE7      : InstFormatX<7>;
 
-// no operands
-class FunnyarchInst_None<dag outs, dag ins, list<dag> pattern, string opcodestr, string argstr,
-             FunnyarchOpcodeX opcode,
-             FunnyarchCond condition,
-             FunnyarchOpSize opsize>
+
+class FUInst<dag outs, dag ins, string opcodestr, string argstr,
+             list<dag> pattern, InstFormatX format>
     : Instruction {
-  let Namespace      = "Funnyarch";
-  let OutOperandList = outs;
-  let InOperandList  = ins;
-  let AsmString      = opcodestr # " " # argstr;
-  let Pattern        = pattern;
+  field bits<32> Inst;
 
-  // control word
-  bits<2> SrcType = 0;
-  bits<2> DstType = 0;
-  bits<3> Condition = condition.Value;
-  bits<6> Opcode = opcode.Value;
-  bits<2> OpSize = opsize.Value;
+  let Size = 4;
 
-  field bits<16> Inst;
-  let Size = 2;
+  bits<6> Opcode = 0;
+  bits<3> Condition = 0;
 
-  let Inst{1-0} = SrcType;
-  let Inst{3-2} = DstType;
-  let Inst{6-4} = Condition;
-  let Inst{7} = 0;
-  let Inst{13-8} = Opcode;
-  let Inst{15-14} = OpSize;
+  let Inst{5-0} = Opcode;
+  let Inst{8-6} = Condition;
+
+  let Namespace = "Funnyarch";
+
+  dag OutOperandList = outs;
+  dag InOperandList = ins;
+  let AsmString = opcodestr # "\t" # argstr;
+  let Pattern = pattern;
+
+  let TSFlags{2-0} = format.Value;
 }
 
-// src only - imm8
-class FunnyarchInst_srcimm8<dag outs, dag ins, list<dag> pattern, string opcodestr, string argstr,
-             FunnyarchOpcodeX opcode,
-             FunnyarchCond condition,
-             bits<8> src>
-    : Instruction {
-  let Namespace      = "Funnyarch";
-  let OutOperandList = outs;
-  let InOperandList  = ins;
-  let AsmString      = opcodestr # " " # argstr;
-  let Pattern        = pattern;
+class FUInstE7<bits<13> instrspecific, FunnyarchOpcodeX opcode, FunnyarchCond condition, string opcodestr, string argstr,
+               dag outs, dag ins, list<dag> pattern>
+    : FUInst<outs, ins, opcodestr, argstr, pattern, InstFormatE7> {
+  bits<5> reg_src;
+  bits<5> reg_tgt;
 
-  // control word
-  bits<2> SrcType = OpTypeImm.Value;
-  bits<2> DstType = 0;
-  bits<3> Condition = condition.Value;
-  bits<6> Opcode = opcode.Value;
-  bits<2> OpSize = OpSizeByte.Value;
+  let Inst{13-9} = reg_src;
+  let Inst{18-14} = reg_tgt;
+  let Inst{31-19} = instrspecific;
 
-  field bits<24> Inst;
-  let Size = 3;
-
-  let Inst{1-0} = SrcType;
-  let Inst{3-2} = DstType;
-  let Inst{6-4} = Condition;
-  let Inst{7} = 0;
-  let Inst{13-8} = Opcode;
-  let Inst{15-14} = OpSize;
-  let Inst{23-16} = src;
+  let Opcode = opcode.Value;
+  let Condition = condition.Value;
 }
-
-// src+dst - immptr32
-class FunnyarchInst_srcimmptr32dstimmptr32<dag outs, dag ins, list<dag> pattern, string opcodestr, string argstr,
-             FunnyarchOpcodeX opcode,
-             FunnyarchCond condition>
-    : Instruction {
-
-  bits<32> src;
-  bits<32> dst;
-  let Namespace      = "Funnyarch";
-  let OutOperandList = outs;
-  let InOperandList  = ins;
-  let AsmString      = opcodestr # " " # argstr;
-  let Pattern        = pattern;
-
-  // control word
-  bits<2> SrcType = OpTypeImmPtr.Value;
-  bits<2> DstType = OpTypeImmPtr.Value;
-  bits<3> Condition = condition.Value;
-  bits<6> Opcode = opcode.Value;
-  bits<2> OpSize = OpSizeWord.Value;
-
-  field bits<80> Inst;
-  let Size = 10;
-
-  let Inst{1-0} = SrcType;
-  let Inst{3-2} = DstType;
-  let Inst{6-4} = Condition;
-  let Inst{7} = 0;
-  let Inst{13-8} = Opcode;
-  let Inst{15-14} = OpSize;
-  let Inst{47-16} = src;
-  let Inst{79-48} = dst;
-}
-
 
 // Format specifies the encoding used by the instruction. This is used by
 // FunnyarchMCCodeEmitter to determine which form of fixup to use. These
@@ -210,7 +136,6 @@ class FunnyarchInst_srcimmptr32dstimmptr32<dag outs, dag ins, list<dag> pattern,
 class InstFormat<bits<5> val> {
   bits<5> Value = val;
 }
-def InstFormatPseudo : InstFormat<0>;
 def InstFormatR      : InstFormat<1>;
 def InstFormatI      : InstFormat<3>;
 def InstFormatU      : InstFormat<6>;
@@ -239,7 +164,6 @@ def OPC_NMADD     : FunnyarchOpcode<0b1001111>;
 def OPC_OP_FP     : FunnyarchOpcode<0b1010011>;
 def OPC_BRANCH    : FunnyarchOpcode<0b1100011>;
 def OPC_JALR      : FunnyarchOpcode<0b1100111>;
-def OPC_JAL       : FunnyarchOpcode<0b1101111>;
 def OPC_SYSTEM    : FunnyarchOpcode<0b1110011>;
 
 class RWInst<dag outs, dag ins, string opcodestr, string argstr,
@@ -265,7 +189,7 @@ class RWInst<dag outs, dag ins, string opcodestr, string argstr,
 
 // Pseudo instructions
 class Pseudo<dag outs, dag ins, list<dag> pattern>
-    : FunnyarchInst_None<outs, ins, pattern, "this is a pseudo instruction", "", OPC_NOP, CondAlways, OpSizeWord>,
+    : FUInst<outs, ins, "this is a pseudo instruction", "", pattern, InstFormatPseudo>,
       Sched<[]> {
   let isPseudo = 1;
   let isCodeGenOnly = 1;

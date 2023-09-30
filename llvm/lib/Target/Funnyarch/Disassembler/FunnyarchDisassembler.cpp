@@ -1,4 +1,5 @@
-//===-- FunnyarchDisassembler.cpp - Disassembler for Funnyarch ----------*- C++ -*-===//
+//===-- FunnyarchDisassembler.cpp - Disassembler for Funnyarch ----------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -32,12 +33,14 @@ using namespace llvm;
 typedef MCDisassembler::DecodeStatus DecodeStatus;
 
 static const unsigned RegisterDecoderTable[] = {
-    Funnyarch::R0,  Funnyarch::R1,  Funnyarch::R2,  Funnyarch::R3,   Funnyarch::R4,  Funnyarch::R5,
-    Funnyarch::R6,  Funnyarch::R7,  Funnyarch::R8,  Funnyarch::R9,   Funnyarch::R10, Funnyarch::R11,
-    Funnyarch::R12, Funnyarch::R13, Funnyarch::R14, Funnyarch::R15,  Funnyarch::R16, Funnyarch::R17,
-    Funnyarch::R18, Funnyarch::R19, Funnyarch::R20, Funnyarch::R21,  Funnyarch::R22, Funnyarch::R23,
-    Funnyarch::R24, Funnyarch::R25, Funnyarch::R26, Funnyarch::R27,  Funnyarch::R28, Funnyarch::R29,
-    Funnyarch::R30, Funnyarch::R31, Funnyarch::RSP, Funnyarch::RESP, Funnyarch::RFP};
+    Funnyarch::R0,  Funnyarch::R1,  Funnyarch::R2,  Funnyarch::R3,
+    Funnyarch::R4,  Funnyarch::R5,  Funnyarch::R6,  Funnyarch::R7,
+    Funnyarch::R8,  Funnyarch::R9,  Funnyarch::R10, Funnyarch::R11,
+    Funnyarch::R12, Funnyarch::R13, Funnyarch::R14, Funnyarch::R15,
+    Funnyarch::R16, Funnyarch::R17, Funnyarch::R18, Funnyarch::R19,
+    Funnyarch::R20, Funnyarch::R21, Funnyarch::R22, Funnyarch::R23,
+    Funnyarch::R24, Funnyarch::R25, Funnyarch::RFP, Funnyarch::RIPTR,
+    Funnyarch::RLR, Funnyarch::RSP, Funnyarch::RIP, Funnyarch::RF};
 
 static DecodeStatus DecodeGPRRegisterClass(MCInst &Inst, uint32_t RegNo,
                                            uint64_t Address,
@@ -217,55 +220,20 @@ static bool getFunnyarchInstrSize(uint16_t control, unsigned int *size) {
   return true;
 }
 
-DecodeStatus FunnyarchDisassembler::getInstruction(MCInst &Instr, uint64_t &Size,
-                                               ArrayRef<uint8_t> Bytes,
-                                               uint64_t Address,
-                                               raw_ostream &CStream) const {
+DecodeStatus FunnyarchDisassembler::getInstruction(MCInst &Instr,
+                                                   uint64_t &Size,
+                                                   ArrayRef<uint8_t> Bytes,
+                                                   uint64_t Address,
+                                                   raw_ostream &CStream) const {
   DecodeStatus Result;
   std::vector<uint64_t> instarr;
-  instarr.push_back((uint64_t)Bytes.data()[0] | ((uint64_t)Bytes.data()[1] << 8));
-  //APInt Insn(16, support::endian::read16le(Bytes.data()));
+  instarr.push_back((uint64_t)Bytes.data()[0] |
+                    ((uint64_t)Bytes.data()[1] << 8));
   APInt Insn(64, ArrayRef<uint64_t>(instarr));
-  // 2 bytes of data are consumed, so set Size to 2
-  // If we don't do this, disassembler may generate result even
-  // the encoding is invalid. We need to let it fail correctly.
-  Size = 2;
+  Size = 4;
 
-  unsigned int instrSize;
-  if (!getFunnyarchInstrSize(*Insn.getRawData(), &instrSize)) {
-    printf("instr decode failure (getFunnyarchInstrSize)\n");
-    return DecodeStatus::Fail;
-  }
-  printf("instrsize: %u i: %p\n", instrSize, *Insn.getRawData());
-  Size = instrSize;
-  // read remaining bytes
-  uint64_t instarr_pos = 16;
-  for(uint64_t i = 0; i < (Size - 2); i++) {
-    if(instarr_pos % 64 == 0 && instarr_pos != 0) {
-      instarr.push_back(0);
-    }
-    instarr.back() |= ((uint64_t)Bytes.data()[2+i]) << (instarr_pos % 64);
-    instarr_pos += 8;
-  }
-  Insn = APInt(Size * 8, ArrayRef<uint64_t>(instarr));
-  printf("instrsize: %u i: %p d: %d\n", instrSize, *Insn.getRawData(), Insn.getBitWidth());
+  Result = decodeInstruction(DecoderTable32, Instr, Insn, Address, this, STI);
 
-  const uint8_t *DecoderTable = nullptr;
-  switch(Insn.getBitWidth()) {
-    case 16:
-      DecoderTable = DecoderTable16;
-      break;
-    case 24:
-      DecoderTable = DecoderTable24;
-      break;
-    case 80:
-      DecoderTable = DecoderTable80;
-      break;
-    default:
-      return DecodeStatus::Fail;
-  }
-  Result = decodeInstruction(DecoderTable, Instr, Insn, Address, this, STI);
-  
   if (Result == DecodeStatus::Success) {
     printf("instr decode OK\n");
   } else {
@@ -276,8 +244,8 @@ DecodeStatus FunnyarchDisassembler::getInstruction(MCInst &Instr, uint64_t &Size
 }
 
 static MCDisassembler *createFunnyarchDisassembler(const Target &T,
-                                               const MCSubtargetInfo &STI,
-                                               MCContext &Ctx) {
+                                                   const MCSubtargetInfo &STI,
+                                                   MCContext &Ctx) {
   return new FunnyarchDisassembler(STI, Ctx);
 }
 

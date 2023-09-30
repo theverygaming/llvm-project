@@ -153,8 +153,9 @@ include "FunnyarchInstrFormats.td"
 //===----------------------------------------------------------------------===//
 
 // this is required to force tablegen to generate different code until we actually have instructions with these sizes
-def F32MIDINST : FunnyarchInst_srcimm8<(outs), (ins), [], "lollmao", "", OPC_JMP, CondAlways, 0xFF>, Sched<[]>;
-def F32BIGINST : FunnyarchInst_srcimmptr32dstimmptr32<(outs uimm32:$dst), (ins uimm32:$src), [], "mov.32", "[$dst], [$src]", OPC_MOV, CondAlways>, Sched<[]>;
+// TODO: def F32MIDINST : FunnyarchInst_srcimm8<(outs), (ins), [], "lollmao", "", OPC_JMP, CondAlways, 0xFF>, Sched<[]>;
+// TODO: def F32BIGINST : FunnyarchInst_srcimmptr32dstimmptr32<(outs uimm32:$dst), (ins uimm32:$src), [], "mov.32", "[$dst], [$src]", OPC_MOV, CondAlways>, Sched<[]>;
+def FUMOV_E7 : FUInstE7<0, OPC_MOV_E7, CondAlways, "mov", "$reg_tgt, $reg_src", (outs GPR:$reg_tgt), (ins GPR:$reg_src), []>, Sched<[]>;
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
 class ALU_ri<bits<3> funct3, string opcodestr>
@@ -181,7 +182,7 @@ class ALU_rr<bits<7> funct7, bits<3> funct3, string opcodestr>
 // funnyarch instructions
 
 let isReturn = 1, isBarrier = 1, isTerminator = 1 in
-def F32RET : FunnyarchInst_None<(outs), (ins), [(funnyarch_ret)], "ret", "", OPC_RET, CondAlways, OpSizeWord>, Sched<[]>;
+def PseudoRET : Pseudo<(outs), (ins), [(funnyarch_ret)]>, PseudoInstExpansion<(FUMOV_E7 RIP, RLR)>;
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 let isReMaterializable = 1, isAsCheapAsAMove = 1 in
@@ -339,4 +340,3 @@ def ADJCALLSTACKDOWN : Pseudo<(outs), (ins i32imm:$amt1, i32imm:$amt2),
 def ADJCALLSTACKUP   : Pseudo<(outs), (ins i32imm:$amt1, i32imm:$amt2),
                               [(callseq_end timm:$amt1, timm:$amt2)]>;
 } // end Defs = [R2], Uses = [R2]
-

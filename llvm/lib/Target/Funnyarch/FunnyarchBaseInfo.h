@@ -1,4 +1,5 @@
-//===-- FunnyarchBaseInfo.h - Top level definitions for Funnyarch MC ----*- C++ -*-===//
+//===-- FunnyarchBaseInfo.h - Top level definitions for Funnyarch MC ----*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -23,6 +24,15 @@ namespace llvm {
 namespace FunnyarchII {
 enum {
   InstFormatPseudo = 0,
+  InstFormatE1 = 1,
+  InstFormatE2 = 2,
+  InstFormatE3 = 3,
+  InstFormatE4 = 4,
+  InstFormatE5 = 5,
+  InstFormatE6 = 6,
+  InstFormatE7 = 7,
+
+  // FIXME: remove this
   InstFormatR = 1,
   InstFormatI = 3,
   InstFormatU = 6,
