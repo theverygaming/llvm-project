@@ -97,6 +97,22 @@ class FUInst<dag outs, dag ins, string opcodestr, string argstr,
   let TSFlags{2-0} = format.Value;
 }
 
+class FUInstE1<bits<8> instrspecific, FunnyarchOpcode opcode, FunnyarchCond condition, string opcodestr, string argstr,
+               dag outs, dag ins, list<dag> pattern>
+    : FUInst<outs, ins, opcodestr, argstr, pattern, InstFormatE7> {
+  bits<5> rsrc1;
+  bits<5> rsrc2;
+  bits<5> rtgt;
+
+  let Inst{13-9} = rsrc1;
+  let Inst{18-14} = rsrc2;
+  let Inst{23-19} = rtgt;
+  let Inst{31-24} = instrspecific;
+
+  let Opcode = opcode.Value;
+  let Condition = condition.Value;
+}
+
 class FUInstE7<bits<13> instrspecific, FunnyarchOpcode opcode, FunnyarchCond condition, string opcodestr, string argstr,
                dag outs, dag ins, list<dag> pattern>
     : FUInst<outs, ins, opcodestr, argstr, pattern, InstFormatE7> {

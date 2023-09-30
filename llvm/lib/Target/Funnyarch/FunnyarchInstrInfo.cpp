@@ -40,6 +40,7 @@ static unsigned getLoadStoreRegOpcode(unsigned Reg,
                                       const TargetRegisterInfo *TRI,
                                       const FunnyarchSubtarget &STI,
                                       bool load) {
+  printf("getLoadStoreRegOpcode\n");
   return Funnyarch::FUMOV_E7; // FIXME: this is so wrong
   /*switch (TRI->getRegSizeInBits(*RC)) {
   default:
@@ -64,6 +65,8 @@ void FunnyarchInstrInfo::storeRegToStackSlot(
     MachineBasicBlock &MBB, MachineBasicBlock::iterator MI, Register SrcReg,
     bool IsKill, int FrameIndex, const TargetRegisterClass *RC,
     const TargetRegisterInfo *TRI) const {
+  printf("storeRegToStackSlot\n");
+  return; // FIXME: breaks stuff
   const MachineFunction &MF = *MBB.getParent();
   assert(MF.getFrameInfo().getObjectSize(FrameIndex) == 4 &&
          "Stack slot too small for store");
@@ -78,6 +81,8 @@ void FunnyarchInstrInfo::loadRegFromStackSlot(
     MachineBasicBlock &MBB, MachineBasicBlock::iterator MI, Register DstReg,
     int FrameIndex, const TargetRegisterClass *RC,
     const TargetRegisterInfo *TRI) const {
+  printf("loadRegFromStackSlot\n");
+  return; // FIXME: breaks stuff
   const MachineFunction &MF = *MBB.getParent();
   assert(MF.getFrameInfo().getObjectSize(FrameIndex) == 4 &&
          "Stack slot too small for store");

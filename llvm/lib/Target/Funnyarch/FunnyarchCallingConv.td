@@ -36,7 +36,7 @@ def Funnyarch_CRetConv : CallingConv<[
   CCIfType<[i1, i8, i16], CCPromoteToType<i32>>,
 
   // i32 are returned in register R0
-  CCIfType<[i32], CCAssignToReg<[R3]>>,
+  CCIfType<[i32], CCAssignToReg<[R0]>>,
 
   // Integer values get stored in stack slots that are 4 bytes in size and
   // 4-byte aligned

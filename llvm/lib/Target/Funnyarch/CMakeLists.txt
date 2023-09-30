@@ -38,5 +38,4 @@ add_llvm_target(FunnyarchCodeGen
 
 add_subdirectory(TargetInfo)
 add_subdirectory(MCTargetDesc)
-# TODO: fix disassembler
 add_subdirectory(Disassembler)

@@ -162,7 +162,14 @@ def : Pat<(simm32:$imm), (ADDI (LUI (HI20 imm:$imm)), (LO12Sext imm:$imm))>;*/
 
 // funnyarch instructions
 
-def FUMOV_E7 : FUInstE7<0x5, OPC_MOV_E7, CondAlways, "mov", "$rtgt, $rsrc", (outs GPR:$rtgt), (ins GPR:$rsrc), []>;
+def FUMOV_E7 : FUInstE7<0x0, OPC_MOV_E7, CondAlways, "mov", "$rtgt, $rsrc", (outs GPR:$rtgt), (ins GPR:$rsrc), []>;
+
+def FUADD_E1 : FUInstE1<0x0, OPC_ADD_E1, CondAlways, "add", "$rtgt, $rsrc1, $rsrc2", (outs GPR:$rtgt), (ins GPR:$rsrc1, GPR:$rsrc2), []>;
+
+class PatGprGpr<SDPatternOperator OpNode, FUInstE1 Inst>
+    : Pat<(OpNode GPR:$rsrc1, GPR:$rsrc2), (Inst GPR:$rsrc1, GPR:$rsrc2)>;
+
+def : PatGprGpr<add, FUADD_E1>;
 
 let isReturn = 1, isBarrier = 1, isTerminator = 1 in
 def PseudoRET : Pseudo<(outs), (ins), [(funnyarch_ret)]>, PseudoInstExpansion<(FUMOV_E7 RIP, RLR)>;

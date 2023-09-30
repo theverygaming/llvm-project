@@ -1,4 +1,5 @@
-//===-- FunnyarchFrameLowering.cpp - Funnyarch Frame Information ------------------===//
+//===-- FunnyarchFrameLowering.cpp - Funnyarch Frame Information
+//------------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -27,23 +28,25 @@ bool FunnyarchFrameLowering::hasFP(const MachineFunction &MF) const {
   return false;
 }
 
-MachineBasicBlock::iterator FunnyarchFrameLowering::eliminateCallFramePseudoInstr(
-                                        MachineFunction &MF,
-                                        MachineBasicBlock &MBB,
-                                        MachineBasicBlock::iterator I) const {
+MachineBasicBlock::iterator
+FunnyarchFrameLowering::eliminateCallFramePseudoInstr(
+    MachineFunction &MF, MachineBasicBlock &MBB,
+    MachineBasicBlock::iterator I) const {
   return MBB.erase(I);
 }
 
 void FunnyarchFrameLowering::emitPrologue(MachineFunction &MF,
-                                     MachineBasicBlock &MBB) const {
+                                          MachineBasicBlock &MBB) const {
+  printf("emitPrologue\n");
 }
 
 void FunnyarchFrameLowering::emitEpilogue(MachineFunction &MF,
-                                     MachineBasicBlock &MBB) const {
+                                          MachineBasicBlock &MBB) const {
+  printf("emitEpilogue\n");
 }
 
-bool
-FunnyarchFrameLowering::hasReservedCallFrame(const MachineFunction &MF) const {
+bool FunnyarchFrameLowering::hasReservedCallFrame(
+    const MachineFunction &MF) const {
   return true;
 }
 
@@ -51,7 +54,8 @@ FunnyarchFrameLowering::hasReservedCallFrame(const MachineFunction &MF) const {
 // physical registers used to determine what callee saved registers should be
 // spilled. This method is optional.
 void FunnyarchFrameLowering::determineCalleeSaves(MachineFunction &MF,
-                                              BitVector &SavedRegs,
-                                              RegScavenger *RS) const {
+                                                  BitVector &SavedRegs,
+                                                  RegScavenger *RS) const {
+  printf("determineCalleeSaves\n");
   TargetFrameLowering::determineCalleeSaves(MF, SavedRegs, RS);
 }

@@ -71,7 +71,8 @@ uint64_t
 FunnyarchMCCodeEmitter::getMachineOpValue(const MCInst &MI, const MCOperand &MO,
                                           SmallVectorImpl<MCFixup> &Fixups,
                                           const MCSubtargetInfo &STI) const {
-  return 0;
+  printf("getMachineOpValue\n");
+  return 1;
   /*
   // Register
   if (Op.isReg()) {
@@ -100,6 +101,7 @@ uint64_t
 FunnyarchMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
                                       SmallVectorImpl<MCFixup> &Fixups,
                                       const MCSubtargetInfo &STI) const {
+  printf("getImmOpValue\n");
   return 0;
   /*
   bool EnableRelax = STI.getFeatureBits()[RISCV::FeatureRelax];
