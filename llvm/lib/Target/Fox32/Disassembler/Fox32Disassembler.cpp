@@ -223,8 +223,9 @@ DecodeStatus Fox32Disassembler::getInstruction(MCInst &Instr, uint64_t &Size,
                                                raw_ostream &CStream) const {
   DecodeStatus Result;
   std::vector<uint64_t> instarr;
-  instarr.push_back((uint64_t)Bytes.data()[0] | ((uint64_t)Bytes.data()[1] << 8));
-  //APInt Insn(16, support::endian::read16le(Bytes.data()));
+  instarr.push_back((uint64_t)Bytes.data()[0] |
+                    ((uint64_t)Bytes.data()[1] << 8));
+  // APInt Insn(16, support::endian::read16le(Bytes.data()));
   APInt Insn(64, ArrayRef<uint64_t>(instarr));
   // 2 bytes of data are consumed, so set Size to 2
   // If we don't do this, disassembler may generate result even
@@ -240,32 +241,33 @@ DecodeStatus Fox32Disassembler::getInstruction(MCInst &Instr, uint64_t &Size,
   Size = instrSize;
   // read remaining bytes
   uint64_t instarr_pos = 16;
-  for(uint64_t i = 0; i < (Size - 2); i++) {
-    if(instarr_pos % 64 == 0 && instarr_pos != 0) {
+  for (uint64_t i = 0; i < (Size - 2); i++) {
+    if (instarr_pos % 64 == 0 && instarr_pos != 0) {
       instarr.push_back(0);
     }
-    instarr.back() |= ((uint64_t)Bytes.data()[2+i]) << (instarr_pos % 64);
+    instarr.back() |= ((uint64_t)Bytes.data()[2 + i]) << (instarr_pos % 64);
     instarr_pos += 8;
   }
   Insn = APInt(Size * 8, ArrayRef<uint64_t>(instarr));
-  printf("instrsize: %u i: %p d: %d\n", instrSize, *Insn.getRawData(), Insn.getBitWidth());
+  printf("instrsize: %u i: %p d: %d\n", instrSize, *Insn.getRawData(),
+         Insn.getBitWidth());
 
   const uint8_t *DecoderTable = nullptr;
-  switch(Insn.getBitWidth()) {
-    case 16:
-      DecoderTable = DecoderTable16;
-      break;
-    case 24:
-      DecoderTable = DecoderTable24;
-      break;
-    case 80:
-      DecoderTable = DecoderTable80;
-      break;
-    default:
-      return DecodeStatus::Fail;
+  switch (Insn.getBitWidth()) {
+  case 16:
+    DecoderTable = DecoderTable16;
+    break;
+  case 24:
+    DecoderTable = DecoderTable24;
+    break;
+  case 80:
+    DecoderTable = DecoderTable80;
+    break;
+  default:
+    return DecodeStatus::Fail;
   }
   Result = decodeInstruction(DecoderTable, Instr, Insn, Address, this, STI);
-  
+
   if (Result == DecodeStatus::Success) {
     printf("instr decode OK\n");
   } else {

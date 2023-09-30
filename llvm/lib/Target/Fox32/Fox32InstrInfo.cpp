@@ -37,7 +37,7 @@ static unsigned getLoadStoreRegOpcode(unsigned Reg,
                                       const TargetRegisterClass *RC,
                                       const TargetRegisterInfo *TRI,
                                       const Fox32Subtarget &STI, bool load) {
-return Fox32::ADDI;
+  return Fox32::ADDI;
   /*switch (TRI->getRegSizeInBits(*RC)) {
   default:
     llvm_unreachable("Unknown spill size");

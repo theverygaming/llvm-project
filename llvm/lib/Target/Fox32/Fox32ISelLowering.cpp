@@ -1,4 +1,5 @@
-//===-- Fox32ISelLowering.cpp - Fox32 DAG Lowering Implementation -----------===//
+//===-- Fox32ISelLowering.cpp - Fox32 DAG Lowering Implementation
+//-----------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -35,8 +36,7 @@ using namespace llvm;
 
 Fox32TargetLowering::Fox32TargetLowering(const TargetMachine &TM,
                                          const Fox32Subtarget &STI)
-    : TargetLowering(TM), Subtarget(STI)
-{
+    : TargetLowering(TM), Subtarget(STI) {
   // Set up the register classes
   addRegisterClass(MVT::i32, &Fox32::GPRRegClass);
 
@@ -53,8 +53,8 @@ Fox32TargetLowering::Fox32TargetLowering(const TargetMachine &TM,
   setBooleanContents(ZeroOrOneBooleanContent);
 
   // Arithmetic operations
-  setOperationAction(ISD::SDIVREM,   MVT::i32, Expand);
-  setOperationAction(ISD::UDIVREM,   MVT::i32, Expand);
+  setOperationAction(ISD::SDIVREM, MVT::i32, Expand);
+  setOperationAction(ISD::UDIVREM, MVT::i32, Expand);
   setOperationAction(ISD::SMUL_LOHI, MVT::i32, Expand);
   setOperationAction(ISD::UMUL_LOHI, MVT::i32, Expand);
 
@@ -62,17 +62,17 @@ Fox32TargetLowering::Fox32TargetLowering(const TargetMachine &TM,
   setOperationAction(ISD::SRL_PARTS, MVT::i32, Custom);
   setOperationAction(ISD::SRA_PARTS, MVT::i32, Custom);
 
-  setOperationAction(ISD::ROTL,  MVT::i32, Expand);
-  setOperationAction(ISD::ROTR,  MVT::i32, Expand);
+  setOperationAction(ISD::ROTL, MVT::i32, Expand);
+  setOperationAction(ISD::ROTR, MVT::i32, Expand);
   setOperationAction(ISD::BSWAP, MVT::i32, Expand);
-  setOperationAction(ISD::CTTZ,  MVT::i32, Expand);
-  setOperationAction(ISD::CTLZ,  MVT::i32, Expand);
+  setOperationAction(ISD::CTTZ, MVT::i32, Expand);
+  setOperationAction(ISD::CTLZ, MVT::i32, Expand);
   setOperationAction(ISD::CTPOP, MVT::i32, Expand);
 
   // Address resolution and constant pool
   setOperationAction(ISD::GlobalAddress, MVT::i32, Custom);
-  setOperationAction(ISD::BlockAddress,  MVT::i32, Custom);
-  setOperationAction(ISD::ConstantPool,  MVT::i32, Custom);
+  setOperationAction(ISD::BlockAddress, MVT::i32, Custom);
+  setOperationAction(ISD::ConstantPool, MVT::i32, Custom);
 
   // Set minimum and preferred function alignment (log2)
   setMinFunctionAlignment(Align(1));
@@ -84,8 +84,10 @@ Fox32TargetLowering::Fox32TargetLowering(const TargetMachine &TM,
 
 const char *Fox32TargetLowering::getTargetNodeName(unsigned Opcode) const {
   switch (Opcode) {
-  case Fox32ISD::Ret: return "Fox32ISD::Ret";
-  default:            return NULL;
+  case Fox32ISD::Ret:
+    return "Fox32ISD::Ret";
+  default:
+    return NULL;
   }
 }
 
@@ -103,21 +105,18 @@ void Fox32TargetLowering::ReplaceNodeResults(SDNode *N,
 //===----------------------------------------------------------------------===//
 
 // Calling convention parameter registers.
-static const MCPhysReg GPRArgRegs[] = {
-  Fox32::R0, Fox32::R1, Fox32::R2, Fox32::R3, Fox32::R4, Fox32::R5, Fox32::R7, Fox32::R7
-};
+static const MCPhysReg GPRArgRegs[] = {Fox32::R0, Fox32::R1, Fox32::R2,
+                                       Fox32::R3, Fox32::R4, Fox32::R5,
+                                       Fox32::R7, Fox32::R7};
 
 /// LowerFormalArguments - transform physical registers into virtual registers
 /// and generate load operations for arguments places on the stack.
 SDValue Fox32TargetLowering::LowerFormalArguments(
-                                    SDValue Chain,
-                                    CallingConv::ID CallConv,
-                                    bool isVarArg,
-                                    const SmallVectorImpl<ISD::InputArg> &Ins,
-                                    const SDLoc &dl, SelectionDAG &DAG,
-                                    SmallVectorImpl<SDValue> &InVals) const {
+    SDValue Chain, CallingConv::ID CallConv, bool isVarArg,
+    const SmallVectorImpl<ISD::InputArg> &Ins, const SDLoc &dl,
+    SelectionDAG &DAG, SmallVectorImpl<SDValue> &InVals) const {
   assert((CallingConv::C == CallConv || CallingConv::Fast == CallConv) &&
-		 "Unsupported CallingConv to FORMAL_ARGS");
+         "Unsupported CallingConv to FORMAL_ARGS");
 
   MachineFunction &MF = DAG.getMachineFunction();
   MachineFrameInfo &MFI = MF.getFrameInfo();
@@ -196,8 +195,10 @@ SDValue Fox32TargetLowering::LowerFormalArguments(
       // to 32 bits.  Insert an assert[sz]ext to capture this, then
       // truncate to the right size.
       switch (VA.getLocInfo()) {
-      default: llvm_unreachable("Unknown loc info!");
-      case CCValAssign::Full: break;
+      default:
+        llvm_unreachable("Unknown loc info!");
+      case CCValAssign::Full:
+        break;
       case CCValAssign::BCvt:
         ArgValue = DAG.getNode(ISD::BITCAST, dl, VA.getValVT(), ArgValue);
         break;
@@ -223,8 +224,7 @@ SDValue Fox32TargetLowering::LowerFormalArguments(
 
       // Some Ins[] entries become multiple ArgLoc[] entries.
       // Process them only once.
-      if (index != lastInsIndex)
-      {
+      if (index != lastInsIndex) {
         llvm_unreachable("Cannot retrieve arguments from the stack");
       }
     }
@@ -237,10 +237,9 @@ SDValue Fox32TargetLowering::LowerFormalArguments(
 //@              Return Value Calling Convention Implementation
 //===----------------------------------------------------------------------===//
 
-bool Fox32TargetLowering::CanLowerReturn(CallingConv::ID CallConv,
-                                MachineFunction &MF, bool isVarArg,
-                                const SmallVectorImpl<ISD::OutputArg> &Outs,
-                                LLVMContext &Context) const {
+bool Fox32TargetLowering::CanLowerReturn(
+    CallingConv::ID CallConv, MachineFunction &MF, bool isVarArg,
+    const SmallVectorImpl<ISD::OutputArg> &Outs, LLVMContext &Context) const {
   SmallVector<CCValAssign, 16> RVLocs;
   CCState CCInfo(CallConv, isVarArg, MF, RVLocs, Context);
   return CCInfo.CheckReturn(Outs, Fox32_CRetConv);
@@ -252,8 +251,8 @@ SDValue Fox32TargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
 }
 
 SDValue
-Fox32TargetLowering::LowerReturn(SDValue Chain,
-                                 CallingConv::ID CallConv, bool isVarArg,
+Fox32TargetLowering::LowerReturn(SDValue Chain, CallingConv::ID CallConv,
+                                 bool isVarArg,
                                  const SmallVectorImpl<ISD::OutputArg> &Outs,
                                  const SmallVectorImpl<SDValue> &OutVals,
                                  const SDLoc &dl, SelectionDAG &DAG) const {
@@ -272,8 +271,7 @@ Fox32TargetLowering::LowerReturn(SDValue Chain,
   RetOps.push_back(Chain); // Operand #0 = Chain (updated below)
 
   // Copy the result values into the output registers.
-  for (unsigned i = 0, realRVLocIdx = 0;
-       i != RVLocs.size();
+  for (unsigned i = 0, realRVLocIdx = 0; i != RVLocs.size();
        ++i, ++realRVLocIdx) {
     CCValAssign &VA = RVLocs[i];
     assert(VA.isRegLoc() && "Can only return in registers!");
@@ -282,8 +280,10 @@ Fox32TargetLowering::LowerReturn(SDValue Chain,
     bool ReturnF16 = false;
 
     switch (VA.getLocInfo()) {
-    default: llvm_unreachable("Unknown loc info!");
-    case CCValAssign::Full: break;
+    default:
+      llvm_unreachable("Unknown loc info!");
+    case CCValAssign::Full:
+      break;
     case CCValAssign::BCvt:
       if (!ReturnF16)
         Arg = DAG.getNode(ISD::BITCAST, dl, VA.getLocVT(), Arg);
@@ -300,8 +300,8 @@ Fox32TargetLowering::LowerReturn(SDValue Chain,
     // Guarantee that all emitted copies are stuck together, avoiding something
     // bad.
     Flag = Chain.getValue(1);
-    RetOps.push_back(DAG.getRegister(VA.getLocReg(),
-                                     ReturnF16 ? MVT::f16 : VA.getLocVT()));
+    RetOps.push_back(
+        DAG.getRegister(VA.getLocReg(), ReturnF16 ? MVT::f16 : VA.getLocVT()));
   }
 
   // Update chain and glue.
@@ -316,28 +316,28 @@ Fox32TargetLowering::LowerReturn(SDValue Chain,
 //  Misc Lower Operation implementation
 //===----------------------------------------------------------------------===//
 
-SDValue
-Fox32TargetLowering::LowerGlobalAddress(SDValue Op, SelectionDAG &DAG) const {
+SDValue Fox32TargetLowering::LowerGlobalAddress(SDValue Op,
+                                                SelectionDAG &DAG) const {
   llvm_unreachable("Unsupported global address");
 }
 
-SDValue
-Fox32TargetLowering::LowerBlockAddress(SDValue Op, SelectionDAG &DAG) const {
+SDValue Fox32TargetLowering::LowerBlockAddress(SDValue Op,
+                                               SelectionDAG &DAG) const {
   llvm_unreachable("Unsupported block address");
 }
 
-SDValue
-Fox32TargetLowering::LowerConstantPool(SDValue Op, SelectionDAG &DAG) const {
+SDValue Fox32TargetLowering::LowerConstantPool(SDValue Op,
+                                               SelectionDAG &DAG) const {
   llvm_unreachable("Unsupported constant pool");
 }
 
-SDValue
-Fox32TargetLowering::LowerRETURNADDR(SDValue Op, SelectionDAG &DAG) const {
+SDValue Fox32TargetLowering::LowerRETURNADDR(SDValue Op,
+                                             SelectionDAG &DAG) const {
   return SDValue();
 }
 
-SDValue
-Fox32TargetLowering::LowerShlParts(SDValue Op, SelectionDAG &DAG) const {
+SDValue Fox32TargetLowering::LowerShlParts(SDValue Op,
+                                           SelectionDAG &DAG) const {
   assert(Op.getNumOperands() == 3 && "Not a long shift");
 
   EVT VT = Op.getValueType();
@@ -397,9 +397,8 @@ Fox32TargetLowering::LowerShlParts(SDValue Op, SelectionDAG &DAG) const {
   return DAG.getMergeValues(Ops, DL);
 }
 
-SDValue
-Fox32TargetLowering::LowerShrParts(SDValue Op, SelectionDAG &DAG,
-                                   bool arith) const {
+SDValue Fox32TargetLowering::LowerShrParts(SDValue Op, SelectionDAG &DAG,
+                                           bool arith) const {
   assert(Op.getNumOperands() == 3 && "Not a long shift");
 
   EVT VT = Op.getValueType();
@@ -473,16 +472,24 @@ Fox32TargetLowering::LowerShrParts(SDValue Op, SelectionDAG &DAG,
   return DAG.getMergeValues(Ops, DL);
 }
 
-SDValue
-Fox32TargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const {
+SDValue Fox32TargetLowering::LowerOperation(SDValue Op,
+                                            SelectionDAG &DAG) const {
   switch (Op.getOpcode()) {
-  default:                        llvm_unreachable("unimplemented operand");
-  case ISD::GlobalAddress:        return LowerGlobalAddress(Op, DAG);
-  case ISD::BlockAddress:         return LowerBlockAddress(Op, DAG);
-  case ISD::ConstantPool:         return LowerConstantPool(Op, DAG);
-  case ISD::RETURNADDR:           return LowerRETURNADDR(Op, DAG);
-  case ISD::SHL_PARTS:            return LowerShlParts(Op, DAG);
-  case ISD::SRL_PARTS:            return LowerShrParts(Op, DAG, false);
-  case ISD::SRA_PARTS:            return LowerShrParts(Op, DAG, true);
+  default:
+    llvm_unreachable("unimplemented operand");
+  case ISD::GlobalAddress:
+    return LowerGlobalAddress(Op, DAG);
+  case ISD::BlockAddress:
+    return LowerBlockAddress(Op, DAG);
+  case ISD::ConstantPool:
+    return LowerConstantPool(Op, DAG);
+  case ISD::RETURNADDR:
+    return LowerRETURNADDR(Op, DAG);
+  case ISD::SHL_PARTS:
+    return LowerShlParts(Op, DAG);
+  case ISD::SRL_PARTS:
+    return LowerShrParts(Op, DAG, false);
+  case ISD::SRA_PARTS:
+    return LowerShrParts(Op, DAG, true);
   }
 }
