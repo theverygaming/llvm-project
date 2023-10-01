@@ -1,4 +1,5 @@
-//===-- FunnyarchMCTargetDesc.cpp - Funnyarch Target Descriptions -----------------===//
+//===-- FunnyarchMCTargetDesc.cpp - Funnyarch Target Descriptions
+//-----------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -42,6 +43,10 @@ static MCInstrInfo *createFunnyarchMCInstrInfo() {
 
 static MCRegisterInfo *createFunnyarchMCRegisterInfo(const Triple &TT) {
   MCRegisterInfo *X = new MCRegisterInfo();
+  InitFunnyarchMCRegisterInfo(X, /*Return address reg*/ Funnyarch::RLR,
+                              /*DwarfFlavour*/ 0,
+                              /*EHFlavor*/ 0,
+                              /*PC*/ Funnyarch::RIP);
   return X;
 }
 
@@ -50,20 +55,21 @@ createFunnyarchMCSubtargetInfo(const Triple &TT, StringRef CPU, StringRef FS) {
   std::string CPUName = CPU.str();
   if (CPUName.empty())
     CPUName = "generic";
-  return createFunnyarchMCSubtargetInfoImpl(TT, CPUName, /*TuneCPU*/ CPUName, FS);
+  return createFunnyarchMCSubtargetInfoImpl(TT, CPUName, /*TuneCPU*/ CPUName,
+                                            FS);
 }
 
 static MCInstPrinter *createFunnyarchMCInstPrinter(const Triple &T,
-                                               unsigned SyntaxVariant,
-                                               const MCAsmInfo &MAI,
-                                               const MCInstrInfo &MII,
-                                               const MCRegisterInfo &MRI) {
+                                                   unsigned SyntaxVariant,
+                                                   const MCAsmInfo &MAI,
+                                                   const MCInstrInfo &MII,
+                                                   const MCRegisterInfo &MRI) {
   return new FunnyarchInstPrinter(MAI, MII, MRI);
 }
 
 static MCAsmInfo *createFunnyarchMCAsmInfo(const MCRegisterInfo &MRI,
-                                       const Triple &TT,
-                                       const MCTargetOptions &Options) {
+                                           const Triple &TT,
+                                           const MCTargetOptions &Options) {
   MCAsmInfo *MAI = new FunnyarchMCAsmInfo(TT);
 
   unsigned WP = MRI.getDwarfRegNum(Funnyarch::R2, true);

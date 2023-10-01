@@ -71,48 +71,35 @@ uint64_t
 FunnyarchMCCodeEmitter::getMachineOpValue(const MCInst &MI, const MCOperand &MO,
                                           SmallVectorImpl<MCFixup> &Fixups,
                                           const MCSubtargetInfo &STI) const {
-  printf("getMachineOpValue\n");
-  return 1;
-  /*
-  // Register
-  if (Op.isReg()) {
-    unsigned RegNum = Op.getReg();
-    const auto *RI = Ctx.getRegisterInfo();
-    Value |= RI->getEncodingValue(RegNum);
-    // Setup the D/A bit
-    if (M68kII::isAddressRegister(RegNum))
-      Value |= 0b1000;
-  } else if (Op.isImm()) {
-    // Immediate
-    Value |= static_cast<uint64_t>(Op.getImm());
-  } else if (Op.isExpr()) {
-    // Absolute address
-    int64_t Addr;
-    if (!Op.getExpr()->evaluateAsAbsolute(Addr))
-      report_fatal_error("Unsupported asm expression. Only absolute address "
-                         "can be placed here.");
-    Value |= static_cast<uint64_t>(Addr);
-  } else {
-    llvm_unreachable("Unsupported operand type");
-  }*/
+  if (MO.isReg()) {
+    return Ctx.getRegisterInfo()->getEncodingValue(MO.getReg());
+  }
+
+  if (MO.isImm()) {
+    return static_cast<unsigned>(MO.getImm());
+  }
+
+  fprintf(stderr, "issue: getMachineOpValue\n");
+  llvm_unreachable("Unhandled expression!");
+  return 0;
 }
 
 uint64_t
 FunnyarchMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
                                       SmallVectorImpl<MCFixup> &Fixups,
                                       const MCSubtargetInfo &STI) const {
-  printf("getImmOpValue\n");
-  return 0;
+  const MCOperand &MO = MI.getOperand(OpNo);
+  // If the destination is an immediate, there is nothing to do.
+  if (MO.isImm())
+    return MO.getImm();
+  fprintf(stderr, "issue: getImmOpValue\n");
+  llvm_unreachable("Unhandled expression!");
   /*
   bool EnableRelax = STI.getFeatureBits()[RISCV::FeatureRelax];
   const MCOperand &MO = MI.getOperand(OpNo);
 
   MCInstrDesc const &Desc = MCII.get(MI.getOpcode());
   unsigned MIFrm = RISCVII::getFormat(Desc.TSFlags);
-
-  // If the destination is an immediate, there is nothing to do.
-  if (MO.isImm())
-    return MO.getImm();
 
   assert(MO.isExpr() &&
          "getImmOpValue expects only expressions or immediates");

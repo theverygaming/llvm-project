@@ -25,9 +25,10 @@
 using namespace llvm;
 
 FunnyarchRegisterInfo::FunnyarchRegisterInfo(const FunnyarchSubtarget &ST)
-    : FunnyarchGenRegisterInfo(Funnyarch::R1, /*DwarfFlavour*/ 0,
+    : FunnyarchGenRegisterInfo(/*Return address reg*/ Funnyarch::RLR,
+                               /*DwarfFlavour*/ 0,
                                /*EHFlavor*/ 0,
-                               /*PC*/ 0),
+                               /*PC*/ Funnyarch::RIP),
       Subtarget(ST) {}
 
 const MCPhysReg *
